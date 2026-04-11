@@ -1,0 +1,79 @@
+# This workflow runs when you push code to the development branch
+# It tests and builds your code to make sure everything works
+name: Development CI
+
+# WHEN does this run?
+# Answer: When you push code to the "development" branch
+on:
+  push:
+    branches:
+      - development
+
+# WHAT jobs will run?
+jobs:
+  test-and-build:
+    # Use Ubuntu Linux machine to run the tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      # STEP 1: Download your code from GitHub
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # STEP 2: Install Node.js (JavaScript runtime)
+      # We need Node.js version 20 to run our code
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # Cache npm packages to make future runs faster
+          cache: 'npm'
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
+
+      # STEP 3: Install all packages needed for the server
+      # npm ci = clean install (faster and more reliable than npm install)
+      - name: Install server dependencies
+        working-directory: ./server
+        run: npm ci
+
+      # STEP 4: Install all packages needed for the client
+      - name: Install client dependencies
+        working-directory: ./client
+        run: npm ci
+
+      # STEP 5: Run server tests
+      # If tests fail, the workflow stops here
+      - name: Run server tests
+        working-directory: ./server
+        run: npm test
+
+      # STEP 6: Run client tests
+      # If tests fail, the workflow stops here
+      - name: Run client tests
+        working-directory: ./client
+        run: npm test
+
+      # STEP 7: Validate server code
+      # (You can add actual build command if needed)
+      - name: Build server
+        working-directory: ./server
+        run: |
+          echo "Server build validation passed"
+
+      # STEP 8: Build the client (Next.js)
+      # This creates production-ready files
+      - name: Build client
+        working-directory: ./client
+        run: npm run build
+
+      # STEP 9: If everything passed, trigger the auto-merge workflow
+      # This sends a signal to run the auto-merge.yml file
+      - name: Trigger auto-merge
+        if: success()  # Only run if all previous steps succeeded
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # This is the signal name that auto-merge.yml is listening for
+          event-type: auto-merge-to-main

@@ -1,0 +1,99 @@
+# This workflow deploys your code to production
+# It only deploys the parts that changed (smart deployment)
+name: Deploy
+
+# WHEN does this run?
+# Answer: When code is pushed to the "main" branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # JOB 1: Figure out what changed (server or client or both)
+  detect-changes:
+    runs-on: ubuntu-latest
+    # These outputs will be used by other jobs
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      client: ${{ steps.filter.outputs.client }}
+    
+    steps:
+      # Download your code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Check which files changed
+      # This looks at your commit and sees if server/ or client/ files changed
+      - name: Check for changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            server:
+              - 'server/**'  # Did any file in server/ folder change?
+            client:
+              - 'client/**'  # Did any file in client/ folder change?
+
+  # JOB 2: Deploy server (only if server files changed)
+  deploy-server:
+    needs: detect-changes  # Wait for detect-changes job to finish
+    if: needs.detect-changes.outputs.server == 'true'  # Only run if server changed
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Send a signal to Render to deploy the server
+      # Render will pull the latest code and restart your server
+      - name: Deploy to Render
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK_URL" ]; then
+            curl -X POST "$RENDER_DEPLOY_HOOK_URL"  # Send HTTP request to Render
+            echo "Server deployment triggered on Render"
+          else
+            echo "RENDER_DEPLOY_HOOK_URL not configured"
+            exit 1
+          fi
+
+  # JOB 3: Deploy client (only if client files changed)
+  deploy-client:
+    needs: detect-changes  # Wait for detect-changes job to finish
+    if: needs.detect-changes.outputs.client == 'true'  # Only run if client changed
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Install client packages
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+
+      # Build the client for production
+      - name: Build client
+        working-directory: ./client
+        run: npm run build
+
+      # Deploy the client (configure based on your hosting)
+      - name: Deploy client
+        env:
+          CLIENT_DEPLOY_HOOK_URL: ${{ secrets.CLIENT_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$CLIENT_DEPLOY_HOOK_URL" ]; then
+            curl -X POST "$CLIENT_DEPLOY_HOOK_URL"  # Send signal to deploy
+            echo "Client deployment triggered"
+          else
+            echo "CLIENT_DEPLOY_HOOK_URL not configured"
+            echo "Add your client deployment logic here (Vercel, Netlify, etc.)"
+          fi

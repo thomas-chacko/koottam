@@ -1,0 +1,37 @@
+# This workflow automatically merges development branch into main
+# It only runs when triggered by the ci.yml workflow
+name: Auto Merge to Main
+
+# WHEN does this run?
+# Answer: When it receives the "auto-merge-to-main" signal from ci.yml
+on:
+  repository_dispatch:
+    types: [auto-merge-to-main]  # Listening for this specific signal
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # STEP 1: Download your code from GitHub
+      # fetch-depth: 0 means get all history (needed for merging)
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get complete git history
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # STEP 2: Set up Git with a bot user
+      # This tells Git who is making the merge
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # STEP 3: Merge development into main and push
+      # This combines your tested code into the main branch
+      - name: Merge development to main
+        run: |
+          git checkout main  # Switch to main branch
+          git merge --no-ff development -m "Auto-merge development to main after successful CI"
+          git push origin main  # Push the merged code to GitHub
