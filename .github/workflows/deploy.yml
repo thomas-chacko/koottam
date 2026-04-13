@@ -17,7 +17,7 @@ jobs:
     outputs:
       server: ${{ steps.filter.outputs.server }}
       client: ${{ steps.filter.outputs.client }}
-    
+
     steps:
       # Download your code
       - name: Checkout code
@@ -37,10 +37,10 @@ jobs:
 
   # JOB 2: Deploy server (only if server files changed)
   deploy-server:
-    needs: detect-changes  # Wait for detect-changes job to finish
-    if: needs.detect-changes.outputs.server == 'true'  # Only run if server changed
+    needs: detect-changes # Wait for detect-changes job to finish
+    if: needs.detect-changes.outputs.server == 'true' # Only run if server changed
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -61,10 +61,10 @@ jobs:
 
   # JOB 3: Deploy client (only if client files changed)
   deploy-client:
-    needs: detect-changes  # Wait for detect-changes job to finish
-    if: needs.detect-changes.outputs.client == 'true'  # Only run if client changed
+    needs: detect-changes # Wait for detect-changes job to finish
+    if: needs.detect-changes.outputs.client == 'true' # Only run if client changed
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -73,7 +73,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       # Install client packages
       - name: Install dependencies

@@ -6,19 +6,19 @@ name: Auto Merge to Main
 # Answer: When it receives the "auto-merge-to-main" signal from ci.yml
 on:
   repository_dispatch:
-    types: [auto-merge-to-main]  # Listening for this specific signal
+    types: [auto-merge-to-main] # Listening for this specific signal
 
 jobs:
   merge:
     runs-on: ubuntu-latest
-    
+
     steps:
       # STEP 1: Download your code from GitHub
       # fetch-depth: 0 means get all history (needed for merging)
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Get complete git history
+          fetch-depth: 0 # Get complete git history
           token: ${{ secrets.GITHUB_TOKEN }}
 
       # STEP 2: Set up Git with a bot user
