@@ -33,7 +33,7 @@ jobs:
       # This combines your tested code into the main branch
       - name: Merge development to main
         run: |
-          git fetch origin development  # Fetch the development branch
+          git fetch --all  # Fetch all branches
           git checkout main  # Switch to main branch
           git merge --no-ff origin/development -m "Auto-merge development to main after successful CI"
           git push origin main  # Push the merged code to GitHub
