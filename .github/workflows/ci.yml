@@ -74,6 +74,6 @@ jobs:
         if: success()  # Only run if all previous steps succeeded
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           # This is the signal name that auto-merge.yml is listening for
           event-type: auto-merge-to-main
