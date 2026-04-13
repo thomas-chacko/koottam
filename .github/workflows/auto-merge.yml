@@ -18,6 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: main # Start from main branch
           fetch-depth: 0 # Get complete git history
           token: ${{ secrets.GITHUB_TOKEN }}
 
