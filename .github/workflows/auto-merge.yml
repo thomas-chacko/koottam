@@ -6,34 +6,29 @@ name: Auto Merge to Main
 # Answer: When it receives the "auto-merge-to-main" signal from ci.yml
 on:
   repository_dispatch:
-    types: [auto-merge-to-main] # Listening for this specific signal
+    types: [auto-merge-to-main]
 
 jobs:
   merge:
     runs-on: ubuntu-latest
-
+    
     steps:
-      # STEP 1: Download your code from GitHub
-      # fetch-depth: 0 means get all history (needed for merging)
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: main # Start from main branch
-          fetch-depth: 0 # Get complete git history
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      # STEP 2: Set up Git with a bot user
-      # This tells Git who is making the merge
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      # STEP 3: Merge development into main and push
-      # This combines your tested code into the main branch
+      # STEP 1: Merge development into main using GitHub API
       - name: Merge development to main
-        run: |
-          git fetch --all  # Fetch all branches
-          git checkout main  # Switch to main branch
-          git merge --no-ff origin/development -m "Auto-merge development to main after successful CI"
-          git push origin main  # Push the merged code to GitHub
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              const result = await github.rest.repos.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: 'main',
+                head: 'development',
+                commit_message: 'Auto-merge development to main after successful CI'
+              });
+              console.log('Merge successful:', result.data);
+            } catch (error) {
+              console.error('Merge failed:', error.message);
+              throw error;
+            }
