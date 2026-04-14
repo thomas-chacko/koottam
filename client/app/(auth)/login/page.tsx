@@ -46,7 +46,7 @@ export default function LoginPage() {
 
           <figure className="relative w-full max-w-md h-80 rounded-2xl overflow-hidden">
             <Image
-              src="/images/signup-hero.jpg"
+              src="/images/login-hero.webp"
               alt="Community members collaborating and sharing ideas in a welcoming environment"
               fill
               className="object-cover"

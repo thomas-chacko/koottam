@@ -46,7 +46,7 @@ export default function SignupPage() {
 
           <figure className="relative w-full max-w-md h-80 rounded-2xl overflow-hidden">
             <Image
-              src="/images/signup-hero.jpg"
+              src="/images/signup-hero.webp"
               alt="Diverse group of community members collaborating and engaging in meaningful conversations"
               fill
               className="object-cover"
