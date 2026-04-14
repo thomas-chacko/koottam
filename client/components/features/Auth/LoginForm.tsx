@@ -13,7 +13,7 @@ export function LoginForm() {
     password: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: Implement login logic
     console.log('Login:', formData);

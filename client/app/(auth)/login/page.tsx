@@ -26,35 +26,34 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="h-screen bg-[#0a0a0f] flex overflow-hidden">
-      {/* Left Side - Hero Section */}
-      <aside className="hidden lg:flex lg:w-1/2 bg-[#1a1a2e] p-12 flex-col justify-between overflow-y-auto" aria-label="Hero section">
-        <header className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center" aria-hidden="true">
-            <span className="text-white font-bold">K</span>
-          </div>
-          <span className="text-white text-xl font-semibold">Koottam</span>
-        </header>
+      {/* Left Side - Full Blurred Image Background */}
+      <aside className="hidden lg:flex lg:w-1/2 relative" aria-label="Hero section">
+        {/* Background Image with Blur */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/login-hero.webp"
+            alt="Community members collaborating and sharing ideas in a welcoming environment"
+            fill
+            className="object-cover"
+            priority
+            sizes="50vw"
+          />
+          <div className="absolute inset-0 backdrop-blur-xs bg-black/50" />
+        </div>
 
-        <section className="space-y-6">
-          <h1 className="text-5xl font-bold text-white leading-tight">
-            Welcome back
-          </h1>
-          
-          <p className="text-gray-400 text-lg max-w-md">
-            Continue your journey in the Koottam community.
-          </p>
-
-          <figure className="relative w-full max-w-md h-80 rounded-2xl overflow-hidden">
-            <Image
-              src="/images/signup-hero.jpg"
-              alt="Community members collaborating and sharing ideas in a welcoming environment"
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </figure>
-        </section>
+        {/* Content Overlay */}
+        <div className="relative z-10 p-12 flex flex-col items-start justify-center max-w-2xl">
+          <section className="space-y-6 max-w-2xl">
+            <h1 className="text-6xl font-bold text-white leading-tight">
+              Connect with your<br />
+              <span className="text-primary">inner circle.</span>
+            </h1>
+            
+            <p className="text-gray-200 text-xl">
+              The premium space for meaningful community engagement and discovery.
+            </p>
+          </section>
+        </div>
       </aside>
 
       {/* Right Side - Login Form */}

@@ -17,7 +17,7 @@ export function SignupForm() {
     confirmPassword: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: Implement signup logic
     console.log('Signup:', formData);
