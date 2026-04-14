@@ -37,7 +37,7 @@ export default function LoginPage() {
 
       {/* Right Side - Login Form */}
       <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
-        <div className="w-full max-w-md my-auto">
+        <div className="w-full max-w-xl my-auto">
           <LoginForm />
         </div>
       </div>

@@ -44,8 +44,8 @@ export default function SignupPage() {
       </div>
 
       {/* Right Side - Signup Form */}
-      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
-        <div className="w-full max-w-md my-auto">
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-xl">
           <SignupForm />
         </div>
       </div>
