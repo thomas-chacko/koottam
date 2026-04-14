@@ -16,6 +16,24 @@ A modern, performant, and accessible social media frontend built with Next.js 16
 
 ---
 
+## Design Rules & Guidelines
+
+### CRITICAL DESIGN RULES
+1. **NO GRADIENTS** - Never use CSS gradients (linear-gradient, radial-gradient, etc.) anywhere in the application
+2. **Cursor Pointer** - Always add `cursor-pointer` class to all interactive elements (buttons, links, clickable items)
+3. **Viewport Height** - All full-page layouts must use `h-screen` and `overflow-hidden` to fit within viewport on all devices
+4. **Flat Colors Only** - Use solid colors from the design system, no gradient backgrounds or hover effects
+5. **Primary Color** - #8B5CF6 (stored as CSS variable `--primary`)
+
+### Color System
+- **Primary:** #8B5CF6 (purple)
+- **Background:** #0a0a0f (dark)
+- **Secondary:** #1a1a2e (dark gray)
+- **Border:** #2a2a3e (gray)
+- **Text:** #ffffff (white), #ededed (light gray), #9ca3af (gray)
+
+---
+
 ## Planned Project Structure
 
 ```
