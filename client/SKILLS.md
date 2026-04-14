@@ -3,6 +3,8 @@
 ## Project Overview
 A modern, performant, and accessible social media frontend built with Next.js 16, React 19, TypeScript, and Tailwind CSS. Features smooth animations, optimized performance, type-safe development, and production-ready error handling.
 
+**Live Demo:** [https://koottam.vercel.app](https://koottam.vercel.app)
+
 ## Tech Stack
 - **Framework:** Next.js 16.2 (App Router)
 - **UI Library:** React 19.2
@@ -334,42 +336,49 @@ client/
 
 ### SEO Implementation
 ```typescript
-// app/layout.tsx - Root metadata
+// app/(auth)/signup/page.tsx - Page-level metadata
 export const metadata: Metadata = {
-  title: 'Koottam - Connect with Friends',
-  description: 'Social media platform for meaningful connections',
-  keywords: ['social media', 'networking', 'community'],
+  title: 'Sign Up - Koottam | Join Our Community',
+  description: 'Create your Koottam account and join the premium social space designed for deep community engagement and meaningful interactions.',
+  keywords: ['sign up', 'register', 'create account', 'join koottam', 'social media', 'community'],
   openGraph: {
-    title: 'Koottam',
-    description: 'Connect with friends and share moments',
-    images: ['/og-image.jpg'],
+    title: 'Sign Up - Koottam',
+    description: 'Join the premium social space designed for deep community engagement.',
+    type: 'website',
+    url: 'https://koottam.vercel.app/signup',
   },
   twitter: {
     card: 'summary_large_image',
+    title: 'Sign Up - Koottam',
+    description: 'Join the premium social space designed for deep community engagement.',
   },
-}
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
-// Dynamic metadata for pages
-export async function generateMetadata({ params }): Promise<Metadata> {
-  const post = await fetchPost(params.id)
-  return {
-    title: post.title,
-    description: post.excerpt,
-    openGraph: {
-      images: [post.image],
-    },
-  }
-}
-
-// Structured data (JSON-LD)
-<script type="application/ld+json">
-  {JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "SocialMediaPosting",
-    "headline": post.title,
-    "author": post.author,
-  })}
-</script>
+// Semantic HTML structure
+<aside aria-label="Hero section">
+  <header>
+    <h1>Connect with</h1>
+  </header>
+  <section>
+    <figure>
+      <Image
+        src="/images/signup-hero.jpg"
+        alt="Diverse group of community members collaborating and engaging in meaningful conversations"
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        priority
+      />
+      <figcaption>Join 12k+ community members</figcaption>
+    </figure>
+  </section>
+</aside>
+<main>
+  <SignupForm />
+</main>
 ```
 
 ### Security Implementation
