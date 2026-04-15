@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { CreatePost } from './CreatePost';
 import { PostCard } from './PostCard';
 import { TrendingUp, Settings, Plus } from 'lucide-react';
+import { useLocalLenis } from '@/hooks/useLocalLenis';
 
 // Mock data - will be replaced with API calls
 const mockStories = [
@@ -27,7 +28,7 @@ const mockPosts = [
       verified: true,
     },
     content: 'Just finished the first draft of the new architectural concept for the Koottam hub. The focus is on fluid spaces and natural light integration. Can\'t wait to share more! 🏗️✨ #Architecture #Minimalism',
-    image: '/images/post-architecture.jpg',
+    image: '/images/post-architecture.png',
     timestamp: '2h ago',
     likes: 124,
     comments: 84,
@@ -42,7 +43,7 @@ const mockPosts = [
       avatar: '/images/avatar-2.jpg',
     },
     content: 'The morning light in the studio today was absolutely perfect for capturing these new ceramic pieces. There\'s something so therapeutic about the tactile nature of clay. 🌅🎨',
-    image: '/images/post-ceramic.jpg',
+    image: '/images/post-ceramic.png',
     timestamp: '5h ago',
     likes: 89,
     comments: 12,
@@ -56,6 +57,11 @@ const isPrimaryAvatar = (name: string) => name.length % 2 === 0;
 
 export function HomeFeed() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const mainFeedRef = useRef<HTMLElement>(null);
+  const rightSidebarRef = useRef<HTMLElement>(null);
+
+  useLocalLenis(mainFeedRef);
+  useLocalLenis(rightSidebarRef);
 
   return (
     <div className="h-screen overflow-hidden bg-[#0a0a0f] text-white">
@@ -73,7 +79,7 @@ export function HomeFeed() {
         </div>
 
         {/* Main Feed */}
-        <main className="flex-1 w-full max-w-[650px] mx-auto overflow-y-auto relative scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <main ref={mainFeedRef} className="flex-1 w-full max-w-[650px] mx-auto overflow-y-auto relative scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="w-full min-h-full">
             {/* Stories */}
             <div className="px-4 py-6">
@@ -123,7 +129,7 @@ export function HomeFeed() {
         </main>
 
         {/* Right Sidebar */}
-        <aside className="hidden xl:block w-[350px] overflow-y-auto shrink-0 flex-none h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pl-4">
+        <aside ref={rightSidebarRef} className="hidden xl:block w-[350px] overflow-y-auto shrink-0 flex-none h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pl-4">
           <div className="py-6 space-y-6">
             {/* Trending Section */}
             <section className="bg-[#1a1a2e] border border-[#2a2a3e] rounded-xl p-5 shadow-sm">
