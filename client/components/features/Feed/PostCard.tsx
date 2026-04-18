@@ -72,7 +72,7 @@ export function PostCard({ post }: PostCardProps) {
             {/* If missing we just have the nicely colored border box, but since we copied images, it will load */}
             <Image
               src={post.image.replace('.jpg', '.png')}
-              alt="Post image"
+              alt={`Image posted by ${post.author.name}: ${post.content.substring(0, 60)}`}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 600px"
@@ -87,6 +87,7 @@ export function PostCard({ post }: PostCardProps) {
           <button
             onClick={(e) => { e.stopPropagation(); handleLike(); }}
             className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group"
+            aria-label={isLiked ? "Unlike post" : "Like post"}
           >
             <Heart
               className={`w-5 h-5 ${isLiked ? 'fill-red-500 text-red-500' : 'text-[#9ca3af] group-hover:text-red-400'}`}
@@ -94,12 +95,18 @@ export function PostCard({ post }: PostCardProps) {
             <span className={`text-sm ${isLiked ? 'text-red-500' : 'text-[#9ca3af] group-hover:text-red-400'}`}>{likes}</span>
           </button>
 
-          <button className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+          <button 
+            className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group"
+            aria-label="Comment on post"
+          >
             <MessageCircle className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
             <span className="text-[#9ca3af] text-sm group-hover:text-[#8B5CF6]">{post.comments}</span>
           </button>
 
-          <button className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+          <button 
+            className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group"
+            aria-label="Share post"
+          >
             <Repeat2 className="w-5 h-5 text-[#9ca3af] group-hover:text-[#10b981]" />
             <span className="text-[#9ca3af] text-sm group-hover:text-[#10b981]">{post.shares}</span>
           </button>
@@ -107,13 +114,19 @@ export function PostCard({ post }: PostCardProps) {
 
         <div className="flex items-center gap-1 sm:gap-2">
           <Tooltip content="Save">
-            <button className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+            <button 
+              className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group"
+              aria-label="Save post"
+            >
               <Bookmark className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
             </button>
           </Tooltip>
 
           <Tooltip content="Share">
-            <button className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+            <button 
+              className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group"
+              aria-label="Copy link to post"
+            >
               <Share2 className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
             </button>
           </Tooltip>
