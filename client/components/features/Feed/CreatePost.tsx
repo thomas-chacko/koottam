@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Image as ImageIcon, Smile, BarChart3, Send } from 'lucide-react';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 export function CreatePost() {
   const [content, setContent] = useState('');
@@ -32,27 +33,32 @@ export function CreatePost() {
 
             <div className="flex items-center justify-between border-t border-[#2a2a3e] pt-4 mt-2">
               <div className="flex gap-1 sm:gap-2">
-                <button
-                  type="button"
-                  className="p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer text-[#8B5CF6] flex items-center justify-center"
-                  title="Add image"
-                >
-                  <ImageIcon className="w-5 h-5" />
-                </button>
-                <button
-                  type="button"
-                  className="p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer text-[#8B5CF6] flex items-center justify-center"
-                  title="Add emoji"
-                >
-                  <Smile className="w-5 h-5" />
-                </button>
-                <button
-                  type="button"
-                  className="p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer text-[#8B5CF6] flex items-center justify-center hidden sm:flex"
-                  title="Add poll"
-                >
-                  <BarChart3 className="w-5 h-5" />
-                </button>
+                <Tooltip content="Add image">
+                  <button
+                    type="button"
+                    className="p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer text-[#8B5CF6] flex items-center justify-center"
+                  >
+                    <ImageIcon className="w-5 h-5" />
+                  </button>
+                </Tooltip>
+                <Tooltip content="Add emoji">
+                  <button
+                    type="button"
+                    className="p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer text-[#8B5CF6] flex items-center justify-center"
+                  >
+                    <Smile className="w-5 h-5" />
+                  </button>
+                </Tooltip>
+                <div className="hidden sm:inline-flex">
+                  <Tooltip content="Add poll">
+                    <button
+                      type="button"
+                      className="p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer text-[#8B5CF6] flex items-center justify-center"
+                    >
+                      <BarChart3 className="w-5 h-5" />
+                    </button>
+                  </Tooltip>
+                </div>
               </div>
 
               <button
