@@ -82,7 +82,7 @@ export function HomeFeed() {
         <main ref={mainFeedRef} className="flex-1 w-full max-w-[650px] mx-auto overflow-y-auto relative scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="w-full min-h-full">
             {/* Stories */}
-            <div className="px-4 py-6">
+            <div className="px-2 py-2">
               <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pt-4 pb-4 px-2">
                 {mockStories.map((story) => {
                   const isPrimary = isPrimaryAvatar(story.name);
