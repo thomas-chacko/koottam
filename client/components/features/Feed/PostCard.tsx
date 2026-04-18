@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Heart, MessageCircle, Repeat2, Bookmark, Share2, BadgeCheck } from 'lucide-react';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 interface Post {
   id: string;
@@ -82,34 +83,40 @@ export function PostCard({ post }: PostCardProps) {
       </div>
 
       <footer className="flex items-center justify-between pt-4 border-t border-[#2a2a3e]/50 mt-4">
-        <button
-          onClick={(e) => { e.stopPropagation(); handleLike(); }}
-          className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group"
-        >
-          <Heart
-            className={`w-5 h-5 ${isLiked ? 'fill-red-500 text-red-500' : 'text-[#9ca3af] group-hover:text-red-400'}`}
-          />
-          <span className={`text-sm ${isLiked ? 'text-red-500' : 'text-[#9ca3af] group-hover:text-red-400'}`}>{likes}</span>
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={(e) => { e.stopPropagation(); handleLike(); }}
+            className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group"
+          >
+            <Heart
+              className={`w-5 h-5 ${isLiked ? 'fill-red-500 text-red-500' : 'text-[#9ca3af] group-hover:text-red-400'}`}
+            />
+            <span className={`text-sm ${isLiked ? 'text-red-500' : 'text-[#9ca3af] group-hover:text-red-400'}`}>{likes}</span>
+          </button>
 
-        <button className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
-          <MessageCircle className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
-          <span className="text-[#9ca3af] text-sm group-hover:text-[#8B5CF6]">{post.comments}</span>
-        </button>
+          <button className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+            <MessageCircle className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
+            <span className="text-[#9ca3af] text-sm group-hover:text-[#8B5CF6]">{post.comments}</span>
+          </button>
 
-        <button className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
-          <Repeat2 className="w-5 h-5 text-[#9ca3af] group-hover:text-[#10b981]" />
-          <span className="text-[#9ca3af] text-sm group-hover:text-[#10b981]">{post.shares}</span>
-        </button>
+          <button className="flex items-center gap-2 p-2 sm:px-4 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+            <Repeat2 className="w-5 h-5 text-[#9ca3af] group-hover:text-[#10b981]" />
+            <span className="text-[#9ca3af] text-sm group-hover:text-[#10b981]">{post.shares}</span>
+          </button>
+        </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <button className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
-            <Bookmark className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
-          </button>
+          <Tooltip content="Save">
+            <button className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+              <Bookmark className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
+            </button>
+          </Tooltip>
 
-          <button className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
-            <Share2 className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
-          </button>
+          <Tooltip content="Share">
+            <button className="flex items-center gap-2 p-2 rounded-full hover:bg-[#2a2a3e] transition-colors cursor-pointer group">
+              <Share2 className="w-5 h-5 text-[#9ca3af] group-hover:text-[#8B5CF6]" />
+            </button>
+          </Tooltip>
         </div>
       </footer>
     </article>
