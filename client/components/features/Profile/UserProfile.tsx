@@ -87,16 +87,15 @@ export function UserProfile() {
           <div className="w-full min-h-full pb-12">
             
             {/* Header Sticky */}
-            <div className="sticky top-0 z-20 bg-[#0a0a0f]/80 backdrop-blur-md px-0 sm:px-4 pt-3 flex items-center gap-4 w-full">
-              <div className="w-full flex flex-col pb-3 border-b border-[#2a2a3e] px-4 sm:px-0">
+            <div className="sticky top-0 z-20 bg-[#0a0a0f]/80 backdrop-blur-md border-b border-[#2a2a3e] px-4 py-3 flex items-center gap-4 w-full">
+              <div className="flex flex-col">
                 <h1 className="text-xl font-bold text-white tracking-tight leading-tight">{MOCK_PROFILE.name}</h1>
                 <p className="text-xs text-[#9ca3af] font-medium tracking-wide">3,492 posts</p>
               </div>
             </div>
 
-            <div className="px-0 sm:px-4 py-0 sm:py-4">
-              {/* Profile Hero Section */}
-              <div className="relative bg-[#1a1a2e] sm:border border-[#2a2a3e] sm:rounded-2xl overflow-hidden mb-0 sm:mb-6 pb-2">
+            {/* Profile Hero Section */}
+            <div className="w-full relative bg-[#1a1a2e] border-b border-[#2a2a3e] overflow-hidden mb-0 pb-2">
               {/* Cover Photo */}
               <div className="h-32 sm:h-48 w-full bg-[#2a2a3e] relative">
                 <Image 
@@ -165,7 +164,7 @@ export function UserProfile() {
             </div>
 
             {/* Profile Nav Tabs */}
-            <nav className="flex items-center justify-between border-y border-[#2a2a3e] px-4 font-semibold text-sm bg-[#0a0a0f] sm:bg-transparent sm:border-y-0 sm:border-b mb-2">
+            <nav className="flex items-center justify-between border-b border-[#2a2a3e] px-4 font-semibold text-sm bg-[#0a0a0f] mb-2">
               {['Posts', 'Replies', 'Highlights', 'Media', 'Likes'].map((tab) => (
                 <button 
                   key={tab}
@@ -180,17 +179,14 @@ export function UserProfile() {
               ))}
             </nav>
 
-              {/* Posts Feed for Profile */}
-              <div className="py-2">
-                <div className="space-y-0">
-                  {mockPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
-                </div>
+            {/* Posts Feed for Profile */}
+            <div className="py-2 sm:px-4">
+              <div className="space-y-0">
+                {mockPosts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
               </div>
-              
             </div>
-
           </div>
         </main>
 

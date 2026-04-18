@@ -37,7 +37,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         {/* Middle Column matching feed width */}
-        <div className="flex-1 w-full max-w-[650px] mx-auto flex items-center justify-end md:justify-center h-full sm:px-4">
+        <div className="flex-1 w-full max-w-[650px] mx-auto flex items-center justify-end md:justify-center h-full">
           <div
             className={`relative flex items-center bg-[#1a1a2e] border border-[#2a2a3e] overflow-hidden transition-all duration-300 ease-in-out cursor-text
               ${isSearchExpanded ? 'w-full rounded-xl' : 'w-10 h-10 md:w-full md:h-auto rounded-full md:rounded-xl'}`}

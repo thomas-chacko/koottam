@@ -26,6 +26,7 @@ A modern, performant, and accessible social media frontend built with Next.js 16
 3. **Viewport Height** - All full-page layouts must use `h-screen` and `overflow-hidden` to fit within viewport on all devices
 4. **Flat Colors Only** - Use solid colors from the design system, no gradient backgrounds or hover effects
 5. **Primary Color** - #8B5CF6 (stored as CSS variable `--primary`)
+6. **Layout Symmetry** - The central feed columns (Header Search, Explore, Profile, Home) must adhere to identical edge-to-edge constraints (e.g., `max-w-[650px]`) WITHOUT mismatched inner horizontal paddings (`sm:px-4`) to guarantee perfect vertical alignment between navigation elements and feed content.
 
 ### Color System
 - **Primary:** #8B5CF6 (purple)
