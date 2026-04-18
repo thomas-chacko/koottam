@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, MessageCircle, User, Menu } from 'lucide-react';
+import { Search, Bell, User, Menu } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 interface HeaderProps {
@@ -37,7 +37,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         {/* Middle Column matching feed width */}
-        <div className="flex-1 w-full max-w-[650px] mx-auto flex items-center justify-end md:justify-center h-full sm:px-4">
+        <div className="flex-1 w-full max-w-[650px] mx-auto flex items-center justify-end md:justify-center h-full">
           <div
             className={`relative flex items-center bg-[#1a1a2e] border border-[#2a2a3e] overflow-hidden transition-all duration-300 ease-in-out cursor-text
               ${isSearchExpanded ? 'w-full rounded-xl' : 'w-10 h-10 md:w-full md:h-auto rounded-full md:rounded-xl'}`}
@@ -52,7 +52,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                   setIsSearchExpanded(true);
                 }
               }}
-              title="Search"
+              aria-label="Search"
             >
               <Search className="w-4 h-4 md:w-5 md:h-5" />
             </button>
@@ -76,22 +76,14 @@ export function Header({ onMenuClick }: HeaderProps) {
           <Link
             href="/notifications"
             className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer relative"
-            title="Notifications"
+            aria-label="Notifications"
           >
             <Bell className="w-5 h-5 md:w-6 md:h-6" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full" />
           </Link>
           <Link
-            href="/messages"
-            className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer"
-            title="Messages"
-          >
-            <MessageCircle className="w-5 h-5 md:w-6 md:h-6" />
-          </Link>
-          <Link
             href="/profile"
             className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer"
-            title="Profile"
           >
             <User className="w-5 h-5 md:w-6 md:h-6" />
           </Link>

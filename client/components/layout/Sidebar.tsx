@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Compass, Users, Bookmark, User, Settings, PlusCircle } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Home, Compass, Users, Bookmark, MessageCircle, Settings, PlusCircle } from 'lucide-react';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -9,12 +10,13 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+  const pathname = usePathname();
   const navItems = [
     { label: 'Feed', href: '/', icon: Home },
     { label: 'Explore', href: '/explore', icon: Compass },
     { label: 'Communities', href: '/communities', icon: Users },
+    { label: 'Messages', href: '/messages', icon: MessageCircle },
     { label: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
-    { label: 'Profile', href: '/profile', icon: User },
     { label: 'Settings', href: '/settings', icon: Settings },
   ];
 
@@ -45,15 +47,19 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         <nav className="space-y-2 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {navItems.map((item) => {
             const Icon = item.icon;
+            const isActive = pathname === item.href;
+            
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-4 px-4 py-3 rounded-lg text-[#ededed] hover:bg-[#1a1a2e] hover:text-white transition-colors cursor-pointer"
+                className={`flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#1a1a2e] transition-colors cursor-pointer ${
+                  isActive ? 'text-[#8B5CF6] font-bold' : 'text-[#ededed] hover:text-white font-medium'
+                }`}
                 onClick={onClose}
               >
-                <Icon className="w-5 h-5" />
-                <span className="font-medium">{item.label}</span>
+                <Icon className="w-5 h-5 shrink-0" />
+                <span>{item.label}</span>
               </Link>
             );
           })}
