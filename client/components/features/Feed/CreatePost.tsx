@@ -1,11 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Image as ImageIcon, Smile, BarChart3, Send } from 'lucide-react';
 import { Tooltip } from '@/components/ui/Tooltip';
 
+const PLACEHOLDERS = [
+  "What's happening in your community?",
+  "Share what's on your mind...",
+  "Got a question? Ask the community!",
+  "What are you working on today?",
+  "Share a recent milestone with us"
+];
+
 export function CreatePost() {
   const [content, setContent] = useState('');
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
+        setFade(true);
+      }, 300); // Wait for fade out to complete before swapping text
+    }, 4000); // Change placeholder every 4 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,17 +46,25 @@ export function CreatePost() {
               ME
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 relative">
+              {/* Custom Animated Placeholder */}
+              {!content && (
+                <div
+                  className={`absolute top-2 left-0 pointer-events-none text-[#9ca3af] text-lg transition-all duration-300 ${fade ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'
+                    }`}
+                >
+                  {PLACEHOLDERS[placeholderIndex]}
+                </div>
+              )}
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="What's happening in your community?"
-                className="w-full bg-transparent text-white placeholder-[#9ca3af] resize-none focus:outline-none min-h-[80px] text-lg py-2"
+                className="w-full bg-transparent text-white resize-none focus:outline-none min-h-[80px] text-lg py-2 relative z-10"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-[#2a2a3e] pt-4 mt-2">
+          <div className="flex items-center justify-between border-t border-[#2a2a3e] pt-4">
             <div className="flex gap-1 sm:gap-2">
               <Tooltip content="Add image">
                 <button
@@ -67,7 +97,7 @@ export function CreatePost() {
             <button
               type="submit"
               disabled={!content.trim()}
-              className="px-6 py-2 bg-[#8B5CF6] text-white font-semibold rounded-full hover:bg-[#7c4ee6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-2"
+              className="px-6 py-2 bg-[#8B5CF6] text-white font-semibold rounded-full hover:bg-[#7c4ee6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-1.5"
             >
               <span>Post</span>
               <Send className="w-4 h-4 hidden sm:block" />
