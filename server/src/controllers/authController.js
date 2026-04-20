@@ -1,0 +1,34 @@
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { successResponse } from '../utils/response.js';
+import AppError from '../utils/AppError.js';
+import { registerUser, loginUser } from '../services/authService.js';
+
+// @desc    Register a new user
+// @route   POST /api/v1/auth/signup
+// @access  Public
+export const signup = asyncHandler(async (req, res) => {
+  const { username, email, password, full_name } = req.body;
+
+  if (!username || !email || !password) {
+    throw new AppError('Please provide username, email, and password', 400);
+  }
+
+  const data = await registerUser({ username, email, password, full_name });
+  
+  return successResponse(res, 201, 'User registered successfully', data);
+});
+
+// @desc    Login user
+// @route   POST /api/v1/auth/login
+// @access  Public
+export const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new AppError('Please provide email and password', 400);
+  }
+
+  const data = await loginUser({ email, password });
+
+  return successResponse(res, 200, 'User logged in successfully', data);
+});
