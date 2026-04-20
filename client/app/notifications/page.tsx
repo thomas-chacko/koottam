@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { NotificationsFeed } from '@/components/features/Notification/NotificationsFeed';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 export const metadata: Metadata = {
   title: 'Notifications - Koottam',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function NotificationsPage() {
-  return <NotificationsFeed />;
+  return (
+    <AuthGuard featureName="Notifications">
+      <NotificationsFeed />
+    </AuthGuard>
+  );
 }

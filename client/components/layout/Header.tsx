@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, User, Menu } from 'lucide-react';
+import { Search, Bell, Menu } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -11,6 +12,8 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     if (isSearchExpanded && searchInputRef.current) {
@@ -71,39 +74,63 @@ export function Header({ onMenuClick }: HeaderProps) {
           </div>
         </div>
 
-        {/* Right Column matching right sidebar width */}
-        <div className="hidden xl:flex items-center justify-end gap-2 md:gap-4 w-[350px] shrink-0 h-full">
-          <Link
-            href="/notifications"
-            className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer relative"
-            aria-label="Notifications"
-          >
-            <Bell className="w-5 h-5 md:w-6 md:h-6" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full" />
-          </Link>
-          <Link
-            href="/profile"
-            className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer"
-          >
-            <User className="w-5 h-5 md:w-6 md:h-6" />
-          </Link>
+        {/* Right Column — desktop */}
+        <div className="hidden xl:flex items-center justify-end gap-3 w-[350px] shrink-0 h-full">
+          {isAuthenticated ? (
+            <>
+              <Link
+                href="/notifications"
+                className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer relative"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full" />
+              </Link>
+              <Link
+                href="/profile"
+                className="w-9 h-9 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-[#7c4ee6] transition-colors shrink-0"
+                aria-label="Profile"
+              >
+                {user?.username?.[0]?.toUpperCase() ?? 'U'}
+              </Link>
+            </>
+          ) : (
+            <Link
+              href="/signup"
+              className="px-5 py-2 bg-[#8B5CF6] text-white font-semibold rounded-lg hover:bg-[#7c4ee6] transition-colors cursor-pointer text-sm whitespace-nowrap"
+            >
+              Join Now
+            </Link>
+          )}
         </div>
 
-        {/* Mobile Right Column */}
+        {/* Right Column — mobile */}
         <div className="flex xl:hidden items-center justify-end gap-1 sm:gap-2 shrink-0 h-full">
-          <Link
-            href="/notifications"
-            className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer relative"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full" />
-          </Link>
-          <Link
-            href="/profile"
-            className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer"
-          >
-            <User className="w-5 h-5" />
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link
+                href="/notifications"
+                className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer relative"
+              >
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full" />
+              </Link>
+              <Link
+                href="/profile"
+                className="w-8 h-8 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-xs cursor-pointer hover:bg-[#7c4ee6] transition-colors shrink-0"
+                aria-label="Profile"
+              >
+                {user?.username?.[0]?.toUpperCase() ?? 'U'}
+              </Link>
+            </>
+          ) : (
+            <Link
+              href="/signup"
+              className="px-3 py-1.5 bg-[#8B5CF6] text-white font-semibold rounded-lg hover:bg-[#7c4ee6] transition-colors cursor-pointer text-xs whitespace-nowrap"
+            >
+              Join Now
+            </Link>
+          )}
         </div>
       </div>
     </header>

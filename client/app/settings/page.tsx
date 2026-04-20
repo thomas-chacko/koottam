@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SettingsView } from '@/components/features/Settings/SettingsView';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 export const metadata: Metadata = {
   title: 'Settings - Koottam',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function SettingsPage() {
-  return <SettingsView />;
+  return (
+    <AuthGuard featureName="Settings">
+      <SettingsView />
+    </AuthGuard>
+  );
 }

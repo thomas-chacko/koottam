@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { MessagesView } from '@/components/features/Messages/MessagesView';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 export const metadata: Metadata = {
   title: 'Messages - Koottam',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function MessagesPage() {
-  return <MessagesView />;
+  return (
+    <AuthGuard featureName="Messages">
+      <MessagesView />
+    </AuthGuard>
+  );
 }
