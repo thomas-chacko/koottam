@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, Users, Bookmark, MessageCircle, Settings, PlusCircle } from 'lucide-react';
+import { Home, Compass, Bookmark, MessageCircle, Settings, PlusCircle } from 'lucide-react';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -14,7 +14,6 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const navItems = [
     { label: 'Feed', href: '/', icon: Home },
     { label: 'Explore', href: '/explore', icon: Compass },
-    { label: 'Communities', href: '/communities', icon: Users },
     { label: 'Messages', href: '/messages', icon: MessageCircle },
     { label: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
     { label: 'Settings', href: '/settings', icon: Settings },
@@ -48,14 +47,13 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
-            
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#1a1a2e] transition-colors cursor-pointer ${
-                  isActive ? 'text-[#8B5CF6] font-bold' : 'text-[#ededed] hover:text-white font-medium'
-                }`}
+                className={`flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#1a1a2e] transition-colors cursor-pointer ${isActive ? 'text-[#8B5CF6] font-bold' : 'text-[#ededed] hover:text-white font-medium'
+                  }`}
                 onClick={onClose}
               >
                 <Icon className="w-5 h-5 shrink-0" />
