@@ -8,13 +8,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
 
 export function LoginForm() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
-  const isLoading = useAppStore((state) => state.isLoading);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,6 +29,7 @@ export function LoginForm() {
     }
     
     try {
+      setIsLoading(true);
       const response = await authService.login(formData);
       if (response.success && response.data) {
         setAuth(response.data.user, response.data.token);
@@ -38,6 +38,8 @@ export function LoginForm() {
       }
     } catch (error) {
       // Global error handler will catch this in axios
+    } finally {
+      setIsLoading(false);
     }
   };
 
