@@ -8,13 +8,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
 
 export function SignupForm() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
-  const isLoading = useAppStore((state) => state.isLoading);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -34,6 +33,7 @@ export function SignupForm() {
     }
 
     try {
+      setIsLoading(true);
       // the backend endpoint expects full_name, username, email, password
       const response = await authService.signup({
         full_name: formData.fullName,
@@ -45,10 +45,12 @@ export function SignupForm() {
       if (response.success && response.data) {
         setAuth(response.data.user, response.data.token);
         toast.success("Account created successfully!");
-        router.push("/home"); // Redirect logic 
+        router.push("/");
       }
     } catch (error) {
       // error handled by axios global interceptor
+    } finally {
+      setIsLoading(false);
     }
   };
 

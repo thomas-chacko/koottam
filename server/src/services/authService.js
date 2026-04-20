@@ -4,14 +4,16 @@ import { generateToken } from '../utils/jwt.js';
 import AppError from '../utils/AppError.js';
 
 export const registerUser = async ({ username, email, password, full_name }) => {
-  // Check if user already exists
-  const existingUserResult = await db.query(
-    'SELECT * FROM users WHERE email = $1 OR username = $2',
-    [email, username]
-  );
+  // Check email conflict
+  const emailCheck = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+  if (emailCheck.rows.length > 0) {
+    throw new AppError('An account with this email already exists', 400);
+  }
 
-  if (existingUserResult.rows.length > 0) {
-    throw new AppError('User with that email or username already exists', 400);
+  // Check username conflict
+  const usernameCheck = await db.query('SELECT id FROM users WHERE username = $1', [username]);
+  if (usernameCheck.rows.length > 0) {
+    throw new AppError('This username is already taken. Please choose another', 400);
   }
 
   // Hash the password
@@ -39,14 +41,14 @@ export const loginUser = async ({ email, password }) => {
   const user = userResult.rows[0];
 
   if (!user) {
-    throw new AppError('Invalid credentials', 401);
+    throw new AppError('No account found with that email address', 404);
   }
 
   // Compare hashed passwords
   const isMatch = await comparePassword(password, user.password);
 
   if (!isMatch) {
-    throw new AppError('Invalid credentials', 401);
+    throw new AppError('Incorrect password. Please try again', 401);
   }
 
   // Create Token
