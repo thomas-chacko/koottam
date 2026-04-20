@@ -63,3 +63,28 @@ export const loginUser = async ({ email, password }) => {
 export const logoutUser = async ({ userId }) => {
   return { message: 'Logged out successfully', userId };
 };
+
+export const changePassword = async ({ userId, currentPassword, newPassword }) => {
+  // Get user with password
+  const userResult = await db.query('SELECT id, password FROM users WHERE id = $1', [userId]);
+  const user = userResult.rows[0];
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  // Verify current password
+  const isMatch = await comparePassword(currentPassword, user.password);
+
+  if (!isMatch) {
+    throw new AppError('Current password is incorrect', 401);
+  }
+
+  // Hash new password
+  const hashedPassword = await hashPassword(newPassword);
+
+  // Update password
+  await db.query('UPDATE users SET password = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [hashedPassword, userId]);
+
+  return { message: 'Password changed successfully' };
+};
