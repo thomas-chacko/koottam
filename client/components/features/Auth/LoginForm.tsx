@@ -34,7 +34,7 @@ export function LoginForm() {
       if (response.success && response.data) {
         setAuth(response.data.user, response.data.token);
         toast.success('Logged in successfully!');
-        router.push('/home'); // Adjust if home is '/'
+        router.push('/');
       }
     } catch (error) {
       // Global error handler will catch this in axios
