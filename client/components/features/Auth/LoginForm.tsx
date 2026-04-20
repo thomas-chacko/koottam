@@ -2,21 +2,43 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { authService } from '@/services/auth.service';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useAppStore } from '@/store/useAppStore';
+import { toast } from 'sonner';
 
 export function LoginForm() {
+  const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const isLoading = useAppStore((state) => state.isLoading);
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login:', formData);
+    if (!formData.email || !formData.password) {
+      toast.error('Please fill in all fields.');
+      return;
+    }
+    
+    try {
+      const response = await authService.login(formData);
+      if (response.success && response.data) {
+        setAuth(response.data.user, response.data.token);
+        toast.success('Logged in successfully!');
+        router.push('/home'); // Adjust if home is '/'
+      }
+    } catch (error) {
+      // Global error handler will catch this in axios
+    }
   };
 
   return (
@@ -68,8 +90,8 @@ export function LoginForm() {
           </Link>
         </div>
 
-        <Button type="submit" variant="primary" size="lg" className="w-full">
-          Log In
+        <Button type="submit" variant="primary" size="lg" className="w-full" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Log In'}
         </Button>
 
         <div className="relative">

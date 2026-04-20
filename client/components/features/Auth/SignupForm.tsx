@@ -2,11 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { authService } from '@/services/auth.service';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useAppStore } from '@/store/useAppStore';
+import { toast } from 'sonner';
 
 export function SignupForm() {
+  const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const isLoading = useAppStore((state) => state.isLoading);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -17,10 +26,30 @@ export function SignupForm() {
     confirmPassword: '',
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Implement signup logic
-    console.log('Signup:', formData);
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      // the backend endpoint expects full_name, username, email, password
+      const response = await authService.signup({
+        full_name: formData.fullName,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.success && response.data) {
+        setAuth(response.data.user, response.data.token);
+        toast.success("Account created successfully!");
+        router.push("/home"); // Redirect logic 
+      }
+    } catch (error) {
+      // error handled by axios global interceptor
+    }
   };
 
   return (
@@ -112,8 +141,8 @@ export function SignupForm() {
           </p>
         </div>
 
-        <Button type="submit" variant="primary" size="lg" className="w-full">
-          Sign Up
+        <Button type="submit" variant="primary" size="lg" className="w-full" disabled={isLoading}>
+          {isLoading ? 'Processing...' : 'Sign Up'}
         </Button>
 
         <div className="relative">
