@@ -1,7 +1,7 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { successResponse } from '../utils/response.js';
 import AppError from '../utils/AppError.js';
-import { registerUser, loginUser } from '../services/authService.js';
+import { registerUser, loginUser, logoutUser } from '../services/authService.js';
 
 // @desc    Register a new user
 // @route   POST /api/v1/auth/signup
@@ -31,4 +31,13 @@ export const login = asyncHandler(async (req, res) => {
   const data = await loginUser({ email, password });
 
   return successResponse(res, 200, 'User logged in successfully', data);
+});
+
+// @desc    Logout user
+// @route   POST /api/v1/auth/logout
+// @access  Private
+export const logout = asyncHandler(async (req, res) => {
+  const data = await logoutUser({ userId: req.user.id });
+
+  return successResponse(res, 200, 'User logged out successfully', data);
 });

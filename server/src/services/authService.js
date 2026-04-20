@@ -59,3 +59,7 @@ export const loginUser = async ({ email, password }) => {
 
   return { user: userWithoutPassword, token };
 };
+
+export const logoutUser = async ({ userId }) => {
+  return { message: 'Logged out successfully', userId };
+};
