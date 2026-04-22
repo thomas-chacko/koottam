@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   title: "Koottam",
   description: "Koottam Social Media Platform",
   verification: {
-    google: "lWPm7Nr3ETFwq5W9J_6onWKNco3c5ia0or6nN13o0HQ"
-  }
+  google: "ot5UHJ4P-aMy3i_N1aObFhE0N9rOHlxftZd2brnywT8"
+}
 };
 
 export default function RootLayout({
