@@ -1,9 +1,9 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { successResponse } from "../utils/response.js";
-import { getUserProfile } from "../services/userService.js";
+import { getUserProfile, updateUserProfile } from "../services/userService.js";
 
-// @desc    Get user profile
-// @route   GET /api/v1/users/:username
+// @desc    Get user profile by username
+// @route   GET /api/v1/user/:username
 // @access  Public
 export const getProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
@@ -11,4 +11,33 @@ export const getProfile = asyncHandler(async (req, res) => {
   const data = await getUserProfile(username);
 
   return successResponse(res, 200, "User profile retrieved successfully", data);
+});
+
+// @desc    Update current user profile
+// @route   PUT /api/v1/user
+// @access  Private
+export const updateProfile = asyncHandler(async (req, res) => {
+  const {
+    username,
+    full_name,
+    bio,
+    location,
+    website,
+    avatar_url,
+    cover_url,
+    is_private,
+  } = req.body || {};
+
+  const data = await updateUserProfile(req.user.id, {
+    username,
+    full_name,
+    bio,
+    location,
+    website,
+    avatar_url,
+    cover_url,
+    is_private,
+  });
+
+  return successResponse(res, 200, "Profile updated successfully", data);
 });
