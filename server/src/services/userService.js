@@ -113,3 +113,20 @@ export const updateUserProfile = async (userId, updateData) => {
 
   return { user: result.rows[0] };
 };
+
+export const deleteUserAccount = async (userId) => {
+  // Check if user exists
+  const userCheck = await db.query('SELECT id, username FROM users WHERE id = $1', [userId]);
+  
+  if (!userCheck.rows[0]) {
+    throw new AppError('User not found', 404);
+  }
+
+  // Delete user (CASCADE will handle related data)
+  await db.query('DELETE FROM users WHERE id = $1', [userId]);
+
+  return { 
+    message: 'Account deleted successfully',
+    username: userCheck.rows[0].username 
+  };
+};
