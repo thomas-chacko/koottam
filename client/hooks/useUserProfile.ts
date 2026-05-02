@@ -7,26 +7,26 @@ export const useUserProfile = (username: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await userService.getProfile(username);
-        setProfile(data);
-      } catch (err: any) {
-        const message = err.response?.data?.message || "Failed to load profile";
-        setError(message);
-        toast.error(message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await userService.getProfile(username);
+      setProfile(data);
+    } catch (err: any) {
+      const message = err.response?.data?.message || "Failed to load profile";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (username) {
       fetchProfile();
     }
   }, [username]);
 
-  return { profile, loading, error, refetch: () => setProfile(null) };
+  return { profile, loading, error, refetch: fetchProfile };
 };

@@ -1,31 +1,32 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
-import { PostCard } from '../Feed/PostCard';
 import { TrendingUp, Settings, MapPin, Calendar, Link as LinkIcon, Camera, Loader2 } from 'lucide-react';
 import { useLocalLenis } from '@/hooks/useLocalLenis';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUpdateProfile, useCloudinaryUpload, useUserProfile } from '@/hooks/useUser';
 import Image from 'next/image';
+import { EditProfileModal } from './EditProfileModal';
 
 const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
 export function UserProfile() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Posts');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const mainFeedRef = useRef<HTMLElement>(null);
   const rightSidebarRef = useRef<HTMLElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const { user: authUser } = useAuthStore();
-  const { updateProfile, updating } = useUpdateProfile();
+  const { updateProfile } = useUpdateProfile();
   const { uploadImage, uploading } = useCloudinaryUpload();
   
   // Fetch profile data from API
-  const { profile, loading: profileLoading } = useUserProfile(authUser?.username || '');
+  const { profile, loading: profileLoading, refetch } = useUserProfile(authUser?.username || '');
 
   useLocalLenis(mainFeedRef);
   useLocalLenis(rightSidebarRef);
@@ -38,6 +39,8 @@ export function UserProfile() {
     const imageUrl = await uploadImage(file, 'avatar');
     if (imageUrl) {
       await updateProfile({ avatar_url: imageUrl });
+      // Refetch profile to get updated data
+      await refetch();
     }
   };
 
@@ -49,6 +52,8 @@ export function UserProfile() {
     const imageUrl = await uploadImage(file, 'cover');
     if (imageUrl) {
       await updateProfile({ cover_url: imageUrl });
+      // Refetch profile to get updated data
+      await refetch();
     }
   };
 
@@ -173,7 +178,10 @@ export function UserProfile() {
                 </div>
                 
                 <div className="mt-3 sm:mt-5 flex items-center gap-2">
-                  <button className="px-4 py-2 font-bold text-sm bg-[#ededed] text-[#0a0a0f] hover:bg-white rounded-full transition-colors cursor-pointer ml-1">
+                  <button 
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="px-4 py-2 font-bold text-sm bg-[#ededed] text-[#0a0a0f] hover:bg-white rounded-full transition-colors cursor-pointer ml-1"
+                  >
                     Edit Profile
                   </button>
                 </div>
@@ -284,6 +292,19 @@ export function UserProfile() {
           </div>
         </aside>
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={refetch}
+        currentProfile={{
+          full_name: displayUser.full_name || '',
+          bio: displayUser.bio || '',
+          location: displayUser.location || '',
+          website: displayUser.website || '',
+        }}
+      />
     </div>
   );
 }
