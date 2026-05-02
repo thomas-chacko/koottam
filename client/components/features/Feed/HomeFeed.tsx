@@ -7,10 +7,11 @@ import { CreatePost } from './CreatePost';
 import { PostCard } from './PostCard';
 import { TrendingUp, Settings, Plus } from 'lucide-react';
 import { useLocalLenis } from '@/hooks/useLocalLenis';
+import { useAuthStore } from '@/store/useAuthStore';
+import Image from 'next/image';
 
 // Mock data - will be replaced with API calls
 const mockStories = [
-  { id: '1', name: 'My Story', avatar: '/images/avatar-me.jpg', isOwn: true },
   { id: '2', name: 'Lila Rose', avatar: '/images/avatar-1.jpg', isOwn: false },
   { id: '3', name: 'Zayn', avatar: '/images/avatar-2.jpg', isOwn: false },
   { id: '4', name: 'Mia Wong', avatar: '/images/avatar-3.jpg', isOwn: false },
@@ -52,13 +53,14 @@ const mockPosts = [
   },
 ];
 
-const getInitials = (name: string) => name === 'My Story' ? 'ME' : name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 const isPrimaryAvatar = (name: string) => name.length % 2 === 0;
 
 export function HomeFeed() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const mainFeedRef = useRef<HTMLElement>(null);
   const rightSidebarRef = useRef<HTMLElement>(null);
+  const { user } = useAuthStore();
 
   useLocalLenis(mainFeedRef);
   useLocalLenis(rightSidebarRef);
@@ -84,6 +86,38 @@ export function HomeFeed() {
             {/* Stories */}
             <div className="py-2">
               <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pt-4 pb-4 px-2">
+                {/* My Story - Always First */}
+                {user && (
+                  <button className="flex flex-col items-center gap-2 shrink-0 cursor-pointer group transition-all">
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl select-none relative z-10 transition-transform group-hover:scale-105 border-2 border-[#8B5CF6] border-dashed p-1">
+                        <div className="w-full h-full rounded-full bg-[#8B5CF6] flex items-center justify-center overflow-hidden">
+                          {user.avatar_url ? (
+                            <Image
+                              src={user.avatar_url}
+                              alt={user.username}
+                              width={64}
+                              height={64}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-white">
+                              {getInitials(user.full_name || user.username)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#8B5CF6] rounded-full border-2 border-[#0a0a0f] flex items-center justify-center z-20">
+                        <Plus className="w-3 h-3 text-white" />
+                      </div>
+                    </div>
+                    <span className="text-xs font-medium text-[#9ca3af] group-hover:text-white transition-colors max-w-[64px] truncate">
+                      My Story
+                    </span>
+                  </button>
+                )}
+
+                {/* Other Stories */}
                 {mockStories.map((story) => {
                   const isPrimary = isPrimaryAvatar(story.name);
                   const bgClass = isPrimary ? 'bg-[#8B5CF6] text-white' : 'bg-[#1a1a2e] text-[#ededed]';
@@ -94,17 +128,11 @@ export function HomeFeed() {
                       className="flex flex-col items-center gap-2 shrink-0 cursor-pointer group transition-all"
                     >
                       <div className="relative">
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl select-none relative z-10 transition-transform group-hover:scale-105
-                          ${story.isOwn ? 'border-2 border-[#8B5CF6] border-dashed p-1' : 'border-2 border-transparent ring-2 ring-offset-2 ring-offset-[#0a0a0f] ' + (isPrimary ? 'ring-[#8B5CF6]' : 'ring-[#2a2a3e]')}`}>
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl select-none relative z-10 transition-transform group-hover:scale-105 border-2 border-transparent ring-2 ring-offset-2 ring-offset-[#0a0a0f] ${isPrimary ? 'ring-[#8B5CF6]' : 'ring-[#2a2a3e]'}`}>
                           <div className={`w-full h-full rounded-full flex items-center justify-center ${bgClass}`}>
                             {getInitials(story.name)}
                           </div>
                         </div>
-                        {story.isOwn && (
-                          <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#8B5CF6] rounded-full border-2 border-[#0a0a0f] flex items-center justify-center z-20">
-                            <Plus className="w-3 h-3 text-white" />
-                          </div>
-                        )}
                       </div>
                       <span className="text-xs font-medium text-[#9ca3af] group-hover:text-white transition-colors max-w-[64px] truncate">
                         {story.name}

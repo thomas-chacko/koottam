@@ -1,21 +1,27 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Image as ImageIcon, Smile, BarChart3, Send } from 'lucide-react';
-import { Tooltip } from '@/components/ui/Tooltip';
+import { useState, useEffect } from "react";
+import { Image as ImageIcon, Smile, BarChart3, Send } from "lucide-react";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { useAuthStore } from "@/store/useAuthStore";
+import Image from "next/image";
 
 const PLACEHOLDERS = [
   "What's happening in your community?",
   "Share what's on your mind...",
   "Got a question? Ask the community!",
   "What are you working on today?",
-  "Share a recent milestone with us"
+  "Share a recent milestone with us",
 ];
 
+const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
 export function CreatePost() {
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [fade, setFade] = useState(true);
+
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,8 +39,8 @@ export function CreatePost() {
     e.preventDefault();
     if (!content.trim()) return;
     // API call to create post
-    console.log('Creating post:', content);
-    setContent('');
+    console.log("Creating post:", content);
+    setContent("");
   };
 
   return (
@@ -42,16 +48,29 @@ export function CreatePost() {
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col">
           <div className="flex gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#8B5CF6] shrink-0 flex items-center justify-center text-white font-bold text-lg select-none">
-              ME
+            <div className="w-12 h-12 rounded-full bg-[#8B5CF6] shrink-0 flex items-center justify-center text-white font-bold text-lg select-none overflow-hidden">
+              {user?.avatar_url ? (
+                <Image
+                  src={user.avatar_url}
+                  alt={user.username}
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitials(user?.full_name || user?.username || 'User')
+              )}
             </div>
 
             <div className="flex-1 relative">
               {/* Custom Animated Placeholder */}
               {!content && (
                 <div
-                  className={`absolute top-2 left-0 pointer-events-none text-[#9ca3af] text-lg transition-all duration-300 ${fade ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'
-                    }`}
+                  className={`absolute top-2 left-0 pointer-events-none text-[#9ca3af] text-lg transition-all duration-300 ${
+                    fade
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-1"
+                  }`}
                 >
                   {PLACEHOLDERS[placeholderIndex]}
                 </div>
