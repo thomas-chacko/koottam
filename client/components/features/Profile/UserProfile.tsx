@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
-import { TrendingUp, Settings, MapPin, Calendar, Link as LinkIcon, Camera, Loader2 } from 'lucide-react';
+import { TrendingUp, Settings, MapPin, Calendar, Link as LinkIcon, Camera, Loader2, BadgeCheck } from 'lucide-react';
 import { useLocalLenis } from '@/hooks/useLocalLenis';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUpdateProfile, useCloudinaryUpload, useUserProfile } from '@/hooks/useUser';
@@ -11,6 +11,15 @@ import Image from 'next/image';
 import { EditProfileModal } from './EditProfileModal';
 
 const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+const formatWebsiteUrl = (url: string) => {
+  if (!url) return '';
+  // If URL doesn't start with http:// or https://, add https://
+  if (!/^https?:\/\//i.test(url)) {
+    return `https://${url}`;
+  }
+  return url;
+};
 
 export function UserProfile() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -98,7 +107,12 @@ export function UserProfile() {
             {/* Header Sticky */}
             <div className="sticky top-0 z-20 bg-[#0a0a0f]/80 backdrop-blur-md border-b border-[#2a2a3e] px-4 py-3 flex items-center gap-4 w-full">
               <div className="flex flex-col">
-                <h1 className="text-xl font-bold text-white tracking-tight leading-tight">{displayUser.full_name || displayUser.username}</h1>
+                <div className="flex items-center gap-1.5">
+                  <h1 className="text-xl font-bold text-white tracking-tight leading-tight">{displayUser.full_name || displayUser.username}</h1>
+                  {displayUser.is_verified && (
+                    <BadgeCheck className="w-5 h-5 text-white fill-[#8B5CF6]" />
+                  )}
+                </div>
                 <p className="text-xs text-[#9ca3af] font-medium tracking-wide">{displayUser.posts_count} posts</p>
               </div>
             </div>
@@ -189,7 +203,12 @@ export function UserProfile() {
 
               {/* Profile Details */}
               <div className="px-4 pb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">{displayUser.full_name || displayUser.username}</h2>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">{displayUser.full_name || displayUser.username}</h2>
+                  {displayUser.is_verified && (
+                    <BadgeCheck className="w-5 h-5 text-white fill-[#8B5CF6]" />
+                  )}
+                </div>
                 <p className="text-[#9ca3af] text-sm md:text-base font-medium mb-3">@{displayUser.username}</p>
                 
                 {displayUser.bio && (
@@ -205,7 +224,7 @@ export function UserProfile() {
                     </span>
                   )}
                   {displayUser.website && (
-                    <a href={displayUser.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 font-medium text-[#8B5CF6] hover:underline cursor-pointer">
+                    <a href={formatWebsiteUrl(displayUser.website)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 font-medium text-[#8B5CF6] hover:underline cursor-pointer">
                       <LinkIcon className="w-4 h-4" /> {displayUser.website}
                     </a>
                   )}
