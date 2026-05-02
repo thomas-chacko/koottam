@@ -27,6 +27,7 @@ A modern, performant, and accessible social media frontend built with Next.js 16
 4. **Flat Colors Only** - Use solid colors from the design system, no gradient backgrounds or hover effects
 5. **Primary Color** - #8B5CF6 (stored as CSS variable `--primary`)
 6. **Layout Symmetry** - The central feed columns (Header Search, Explore, Profile, Home) must adhere to identical edge-to-edge constraints (e.g., `max-w-[650px]`) WITHOUT mismatched inner horizontal paddings (`sm:px-4`) to guarantee perfect vertical alignment between navigation elements and feed content.
+7. **Live Updates** - All data updates (profile edits, image uploads, etc.) MUST be reflected immediately in the UI without requiring page refresh. Always refetch data after mutations and sync with global state.
 
 ### Color System
 - **Primary:** #8B5CF6 (purple)
@@ -490,6 +491,33 @@ export const Button: React.FC<ButtonProps> = ({
 <Button variant="primary" size="lg" loading={isLoading}>
   Submit
 </Button>
+```
+
+### Live Updates Pattern
+```typescript
+// hooks/useUserProfile.ts - Expose refetch function
+export const useUserProfile = (username: string) => {
+  const fetchProfile = async () => {
+    // Fetch logic
+  };
+  
+  return { profile, loading, error, refetch: fetchProfile };
+};
+
+// Component usage - Refetch after mutations
+const { profile, refetch } = useUserProfile(username);
+const { updateProfile } = useUpdateProfile();
+
+const handleUpdate = async (data) => {
+  await updateProfile(data); // Updates auth store
+  await refetch(); // Refetch to sync UI
+};
+
+// Modal pattern - Trigger parent refetch on success
+<EditProfileModal
+  onSuccess={refetch} // Parent passes refetch callback
+  onClose={() => setIsOpen(false)}
+/>
 ```
 
 ### Global Error Handler

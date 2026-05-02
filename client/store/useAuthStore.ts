@@ -1,14 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { UserProfile } from '@/services/user.service';
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  role: string;
-}
+export type User = UserProfile;
 
 interface AuthState {
   user: User | null;

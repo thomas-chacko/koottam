@@ -35,6 +35,17 @@ export const updateUserProfile = async (userId, updateData) => {
     is_private,
   } = updateData;
 
+  // Validate Cloudinary URLs if provided
+  const cloudinaryPattern = /^https?:\/\/res\.cloudinary\.com\//;
+  
+  if (avatar_url && !cloudinaryPattern.test(avatar_url)) {
+    throw new AppError('Invalid avatar URL. Must be a Cloudinary URL', 400);
+  }
+
+  if (cover_url && !cloudinaryPattern.test(cover_url)) {
+    throw new AppError('Invalid cover URL. Must be a Cloudinary URL', 400);
+  }
+
   // Check if username is being updated and if it's already taken
   if (username !== undefined) {
     const usernameCheck = await db.query(

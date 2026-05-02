@@ -88,10 +88,18 @@ export function Header({ onMenuClick }: HeaderProps) {
               </Link>
               <Link
                 href="/profile"
-                className="w-9 h-9 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-[#7c4ee6] transition-colors shrink-0"
+                className="w-9 h-9 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-[#7c4ee6] transition-colors shrink-0 overflow-hidden"
                 aria-label="Profile"
               >
-                {user?.username?.[0]?.toUpperCase() ?? 'U'}
+                {user?.avatar_url ? (
+                  <img 
+                    src={user.avatar_url} 
+                    alt={user.username} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  user?.username?.[0]?.toUpperCase() ?? 'U'
+                )}
               </Link>
             </>
           ) : (
@@ -117,10 +125,18 @@ export function Header({ onMenuClick }: HeaderProps) {
               </Link>
               <Link
                 href="/profile"
-                className="w-8 h-8 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-xs cursor-pointer hover:bg-[#7c4ee6] transition-colors shrink-0"
+                className="w-8 h-8 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-xs cursor-pointer hover:bg-[#7c4ee6] transition-colors shrink-0 overflow-hidden"
                 aria-label="Profile"
               >
-                {user?.username?.[0]?.toUpperCase() ?? 'U'}
+                {user?.avatar_url ? (
+                  <img 
+                    src={user.avatar_url} 
+                    alt={user.username} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  user?.username?.[0]?.toUpperCase() ?? 'U'
+                )}
               </Link>
             </>
           ) : (
