@@ -3,19 +3,27 @@ import { LoginForm } from '@/components/features/Auth/LoginForm';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Log In - Koottam | Access Your Account',
-  description: 'Log in to your Koottam account and continue your journey in the premium social space for meaningful community engagement.',
-  keywords: ['login', 'sign in', 'access account', 'koottam login', 'social media login'],
+  title: 'Log In - Koottam | കൂട്ടം',
+  description: 'Log in to your Koottam (കൂട്ടം) account. Connect with your Kerala community, share moments with Malayalis, and stay connected with your കൂട്ടം.',
+  keywords: [
+    'koottam login',
+    'കൂട്ടം login',
+    'kerala social media login',
+    'malayali social network login',
+    'sign in koottam',
+    'malayalam social media login',
+    'kerala community login',
+  ],
   openGraph: {
-    title: 'Log In - Koottam',
-    description: 'Access your Koottam account and continue your journey.',
+    title: 'Log In - Koottam | കൂട്ടം',
+    description: 'Access your Koottam account and connect with your Kerala community.',
     type: 'website',
     url: 'https://koottam.vercel.app/login',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Log In - Koottam',
-    description: 'Access your Koottam account and continue your journey.',
+    title: 'Log In - Koottam | കൂട്ടം',
+    description: 'Access your Koottam account and connect with your Kerala community.',
   },
   robots: {
     index: true,
@@ -45,12 +53,12 @@ export default function LoginPage() {
         <div className="relative z-10 p-12 flex flex-col items-start justify-center max-w-2xl">
           <section className="space-y-6 max-w-2xl">
             <h1 className="text-6xl font-bold text-white leading-tight">
-              Connect with your<br />
-              <span className="text-primary">inner circle.</span>
+              Welcome back to your<br />
+              <span className="text-primary">കൂട്ടം.</span>
             </h1>
             
             <p className="text-gray-200 text-xl">
-              The premium space for meaningful community engagement and discovery.
+              Kerala's social space for meaningful connections and community engagement.
             </p>
           </section>
         </div>

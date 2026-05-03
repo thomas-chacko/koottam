@@ -28,6 +28,7 @@ A modern, performant, and accessible social media frontend built with Next.js 16
 5. **Primary Color** - #8B5CF6 (stored as CSS variable `--primary`)
 6. **Layout Symmetry** - The central feed columns (Header Search, Explore, Profile, Home) must adhere to identical edge-to-edge constraints (e.g., `max-w-[650px]`) WITHOUT mismatched inner horizontal paddings (`sm:px-4`) to guarantee perfect vertical alignment between navigation elements and feed content.
 7. **Live Updates** - All data updates (profile edits, image uploads, etc.) MUST be reflected immediately in the UI without requiring page refresh. Always refetch data after mutations and sync with global state.
+8. **NO MD FILES** - Never create markdown (.md) files without explicit user permission. This includes documentation, guides, summaries, or any other markdown files.
 
 ### Color System
 - **Primary:** #8B5CF6 (purple)
@@ -191,17 +192,20 @@ client/
 - **Component Documentation** - Clear prop types and usage
 
 ### 11. SEO Optimization
-- **Server-Side Rendering (SSR)** - Pre-rendered HTML for search engines
-- **Static Site Generation (SSG)** - Build-time page generation
-- **Metadata API** - Dynamic meta tags, Open Graph, Twitter Cards
-- **Sitemap Generation** - Auto-generated XML sitemap
-- **Robots.txt** - Search engine crawling configuration
-- **Structured Data** - JSON-LD schema markup for rich snippets
-- **Semantic HTML** - Proper heading hierarchy, semantic tags
-- **Image Alt Text** - Descriptive alt attributes for accessibility & SEO
-- **URL Structure** - Clean, descriptive URLs
-- **Canonical URLs** - Prevent duplicate content issues
-- **Page Speed** - Core Web Vitals optimization (LCP, FID, CLS)
+- **Server-Side Rendering (SSR)** - Pre-rendered HTML for search engines ✅
+- **Static Site Generation (SSG)** - Build-time page generation ✅
+- **Metadata API** - Dynamic meta tags, Open Graph, Twitter Cards ✅
+- **Sitemap Generation** - Auto-generated XML sitemap ✅ IMPLEMENTED
+- **Robots.txt** - Search engine crawling configuration ✅ IMPLEMENTED
+- **Structured Data** - JSON-LD schema markup for rich snippets ✅ IMPLEMENTED
+- **Semantic HTML** - Proper heading hierarchy, semantic tags ✅
+- **Image Alt Text** - Descriptive alt attributes for accessibility & SEO ✅
+- **URL Structure** - Clean, descriptive URLs ✅
+- **Canonical URLs** - Prevent duplicate content issues ✅ IMPLEMENTED
+- **Page Speed** - Core Web Vitals optimization (LCP, FID, CLS) ✅
+- **Security Headers** - HSTS, X-Frame-Options, CSP ✅ IMPLEMENTED
+- **PWA Manifest** - Progressive Web App support ✅ IMPLEMENTED
+- **Google Search Console Ready** - Verification tags and setup guide ✅ IMPLEMENTED
 
 ### 12. Security Best Practices
 - **Content Security Policy (CSP)** - Prevent XSS attacks

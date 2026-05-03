@@ -3,19 +3,30 @@ import { SignupForm } from '@/components/features/Auth/SignupForm';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Sign Up - Koottam | Join Our Community',
-  description: 'Create your Koottam account and join the premium social space designed for deep community engagement and meaningful interactions.',
-  keywords: ['sign up', 'register', 'create account', 'join koottam', 'social media', 'community'],
+  title: 'Sign Up - Join Koottam | കൂട്ടം',
+  description: 'Create your Koottam (കൂട്ടം) account and join Kerala\'s social media platform. Connect with Malayalis, share your moments, and build your കൂട്ടം (group of people).',
+  keywords: [
+    'koottam signup',
+    'കൂട്ടം register',
+    'join koottam',
+    'kerala social media signup',
+    'malayali social network',
+    'create account koottam',
+    'malayalam social media',
+    'kerala community join',
+    'malayali connect',
+    'kerala networking',
+  ],
   openGraph: {
-    title: 'Sign Up - Koottam',
-    description: 'Join the premium social space designed for deep community engagement.',
+    title: 'Sign Up - Join Koottam | കൂട്ടം',
+    description: 'Join Kerala\'s social media platform. Connect with Malayalis and build your കൂട്ടം.',
     type: 'website',
     url: 'https://koottam.vercel.app/signup',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sign Up - Koottam',
-    description: 'Join the premium social space designed for deep community engagement.',
+    title: 'Sign Up - Join Koottam | കൂട്ടം',
+    description: 'Join Kerala\'s social media platform. Connect with Malayalis and build your കൂട്ടം.',
   },
   robots: {
     index: true,
@@ -45,11 +56,11 @@ export default function SignupPage() {
         <div className="relative z-10 p-12 flex flex-col items-start justify-center max-w-2xl">
           <section className="space-y-6 max-w-2xl">
             <h1 className="text-6xl font-bold text-white leading-tight">
-              Connect with
+              Connect with your കൂട്ടം
             </h1>
             
             <p className="text-gray-200 text-xl">
-              Join the premium social space designed for deep community engagement and meaningful interactions.
+              Join Koottam, Kerala's social media platform designed for Malayalis to connect, share, and build meaningful relationships.
             </p>
 
             {/* Stats Badge */}
@@ -59,7 +70,7 @@ export default function SignupPage() {
                 <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-black" />
                 <div className="w-6 h-6 rounded-full bg-pink-500 border-2 border-black" />
               </div>
-              <span className="text-white text-sm">Join 12k+ community members</span>
+              <span className="text-white text-sm">Join 12k+ Malayalis</span>
             </div>
           </section>
         </div>
