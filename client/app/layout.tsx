@@ -15,86 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://koottam.vercel.app'),
-  title: {
-    default: 'Koottam - Social Media for Kerala | കൂട്ടം',
-    template: '%s | Koottam',
-  },
-  description: 'Koottam (കൂട്ടം) - Social media platform for Malayalis and Kerala community. Connect with people from Kerala, share posts, photos, and build your കൂട്ടം (group). Join the largest Malayalam social network.',
-  keywords: [
-    'koottam',
-    'കൂട്ടം',
-    'kerala social media',
-    'malayali social network',
-    'malayalam social media',
-    'kerala community',
-    'malayali community',
-    'social media kerala',
-    'kerala people',
-    'malayali connect',
-    'kerala networking',
-    'malayalam platform',
-    'kerala online community',
-    'malayali friends',
-    'kerala social network',
-    'indian social media',
-    'south indian social media',
-    'regional social media india',
-    'malayalam app',
-    'kerala app',
-  ],
-  authors: [{ name: 'Koottam Team' }],
-  creator: 'Koottam',
-  publisher: 'Koottam',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    alternateLocale: ['ml_IN'],
-    url: 'https://koottam.vercel.app',
-    siteName: 'Koottam',
-    title: 'Koottam - Social Media for Kerala & Malayalis | കൂട്ടം',
-    description: 'Join Koottam (കൂട്ടം), the social media platform built for Kerala community. Connect with Malayalis worldwide, share your moments, and build your കൂട്ടം.',
-    images: [
-      {
-        url: '/images/koottam-logo.png',
-        width: 1200,
-        height: 630,
-        alt: 'Koottam - Kerala Social Media Platform',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Koottam - Social Media for Kerala | കൂട്ടം',
-    description: 'Join Koottam (കൂട്ടം), the social media platform for Kerala community. Connect with Malayalis, share posts, and build your group.',
-    images: ['/images/koottam-logo.png'],
-    creator: '@koottam',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+  title: "Koottam",
+  description: "Koottam Social Media Platform",
   verification: {
-    google: 'YOUR_GOOGLE_VERIFICATION_CODE',
-    // yandex: 'YOUR_YANDEX_VERIFICATION_CODE',
-    // bing: 'YOUR_BING_VERIFICATION_CODE',
-  },
-  alternates: {
-    canonical: 'https://koottam.vercel.app',
-  },
-  category: 'Social Networking',
+  google: "ot5UHJ4P-aMy3i_N1aObFhE0N9rOHlxftZd2brnywT8"
+}
 };
 
 export default function RootLayout({
