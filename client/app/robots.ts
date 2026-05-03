@@ -12,6 +12,7 @@ export default function robots(): MetadataRoute.Robots {
           '/api/',           // Don't index API routes
           '/settings/',      // Private user settings
           '/messages/',      // Private messages
+          '/sitemap.xml',    // Block public access to sitemap
           '/*?*',            // Don't index URLs with query parameters
         ],
       },
@@ -19,6 +20,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: 'Googlebot',
         allow: '/',
         disallow: ['/api/', '/settings/', '/messages/'],
+        // Googlebot can access sitemap
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
