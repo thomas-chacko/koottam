@@ -1,13 +1,13 @@
-# This workflow runs when you push code to the development branch
+# This workflow runs when you push code to the main branch
 # It tests and builds your code to make sure everything works
-name: Development CI
+name: CI
 
 # WHEN does this run?
-# Answer: When you push code to the "development" branch
+# Answer: When you push code to the "main" branch
 on:
   push:
     branches:
-      - development
+      - main
 
 # WHAT jobs will run?
 jobs:
@@ -68,12 +68,3 @@ jobs:
         working-directory: ./client
         run: npm run build
 
-      # STEP 9: If everything passed, trigger the auto-merge workflow
-      # This sends a signal to run the auto-merge.yml file
-      - name: Trigger auto-merge
-        if: success() # Only run if all previous steps succeeded
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.PAT_TOKEN }}
-          # This is the signal name that auto-merge.yml is listening for
-          event-type: auto-merge-to-main
