@@ -7,10 +7,10 @@ const router = Router();
 
 // ─── Health Check
 router.get("/health", (_req, res) => {
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     message: "Koottam API is healthy",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 

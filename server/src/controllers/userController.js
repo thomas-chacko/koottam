@@ -1,6 +1,10 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { successResponse } from "../utils/response.js";
-import { getUserProfile, updateUserProfile, deleteUserAccount } from "../services/userService.js";
+import {
+  getUserProfile,
+  updateUserProfile,
+  deleteUserAccount,
+} from "../services/userService.js";
 
 // @desc    Get user profile by username
 // @route   GET /api/v1/user/:username

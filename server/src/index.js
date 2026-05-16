@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import app from './app.js';
+import app from "./app.js";
 import { PORT, NODE_ENV } from "./config/env.js";
 
 const server = app.listen(PORT, () => {
@@ -10,18 +10,18 @@ const server = app.listen(PORT, () => {
 // ─── Graceful Shutdown
 const gracefulShutdown = (signal) => {
   console.log(`\n[server] ${signal} received, closing server gracefully...`);
-  
+
   server.close(() => {
-    console.log('[server] HTTP server closed');
+    console.log("[server] HTTP server closed");
     process.exit(0);
   });
 
   // Force shutdown after 10 seconds
   setTimeout(() => {
-    console.error('[server] Forced shutdown after timeout');
+    console.error("[server] Forced shutdown after timeout");
     process.exit(1);
   }, 10000);
 };
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));

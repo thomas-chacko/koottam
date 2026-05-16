@@ -11,39 +11,47 @@ export const getUploadSignature = asyncHandler(async (req, res) => {
 
   // Require type to be specified
   if (!type) {
-    throw new AppError('Upload type is required', 400);
+    throw new AppError("Upload type is required", 400);
   }
 
   // Validate upload type
-  const allowedTypes = ['avatar', 'cover', 'post', 'story', 'message'];
-  
+  const allowedTypes = ["avatar", "cover", "post", "story", "message"];
+
   if (!allowedTypes.includes(type)) {
-    throw new AppError(`Invalid upload type. Allowed: ${allowedTypes.join(', ')}`, 400);
+    throw new AppError(
+      `Invalid upload type. Allowed: ${allowedTypes.join(", ")}`,
+      400,
+    );
   }
 
   // Build folder path based on type and username
   const username = req.user.username;
   let folder;
 
-  switch(type) {
-    case 'avatar':
-      folder = 'koottam/avatars';
+  switch (type) {
+    case "avatar":
+      folder = "koottam/avatars";
       break;
-    case 'cover':
-      folder = 'koottam/covers';
+    case "cover":
+      folder = "koottam/covers";
       break;
-    case 'post':
+    case "post":
       folder = `koottam/posts/${username}`;
       break;
-    case 'story':
+    case "story":
       folder = `koottam/stories/${username}`;
       break;
-    case 'message':
+    case "message":
       folder = `koottam/messages/${username}`;
       break;
   }
 
   const data = generateUploadSignature({ folder });
 
-  return successResponse(res, 200, "Upload signature generated successfully", data);
+  return successResponse(
+    res,
+    200,
+    "Upload signature generated successfully",
+    data,
+  );
 });
