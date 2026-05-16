@@ -77,7 +77,7 @@ export const changePassword = async ({ userId, currentPassword, newPassword }) =
   const isMatch = await comparePassword(currentPassword, user.password);
 
   if (!isMatch) {
-    throw new AppError('Current password is incorrect', 401);
+    throw new AppError('Current password is incorrect', 400);
   }
 
   // Hash new password

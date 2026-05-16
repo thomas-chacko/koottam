@@ -1,5 +1,6 @@
 import db from "../config/db.js";
 import AppError from "../utils/AppError.js";
+import { comparePassword } from "../utils/security.js";
 
 export const getUserProfile = async (username) => {
   const userResult = await db.query(
@@ -11,7 +12,7 @@ export const getUserProfile = async (username) => {
       posts_count, created_at 
      FROM users 
      WHERE username = $1`,
-    [username]
+    [username],
   );
 
   const user = userResult.rows[0];
@@ -37,13 +38,13 @@ export const updateUserProfile = async (userId, updateData) => {
 
   // Validate Cloudinary URLs if provided
   const cloudinaryPattern = /^https?:\/\/res\.cloudinary\.com\//;
-  
+
   if (avatar_url && !cloudinaryPattern.test(avatar_url)) {
-    throw new AppError('Invalid avatar URL. Must be a Cloudinary URL', 400);
+    throw new AppError("Invalid avatar URL. Must be a Cloudinary URL", 400);
   }
 
   if (cover_url && !cloudinaryPattern.test(cover_url)) {
-    throw new AppError('Invalid cover URL. Must be a Cloudinary URL', 400);
+    throw new AppError("Invalid cover URL. Must be a Cloudinary URL", 400);
   }
 
   // Check if username is being updated and if it's already taken
@@ -125,19 +126,37 @@ export const updateUserProfile = async (userId, updateData) => {
   return { user: result.rows[0] };
 };
 
-export const deleteUserAccount = async (userId) => {
-  // Check if user exists
-  const userCheck = await db.query('SELECT id, username FROM users WHERE id = $1', [userId]);
-  
+export const deleteUserAccount = async (userId, password) => {
+  if (!password) {
+    throw new AppError(
+      "Please provide your current password to delete your account",
+      400,
+    );
+  }
+
+  // Check if user exists and get password
+  const userCheck = await db.query(
+    "SELECT id, username, password FROM users WHERE id = $1",
+    [userId],
+  );
+
   if (!userCheck.rows[0]) {
-    throw new AppError('User not found', 404);
+    throw new AppError("User not found", 404);
+  }
+
+  const isPasswordCorrect = await comparePassword(
+    password,
+    userCheck.rows[0].password,
+  );
+  if (!isPasswordCorrect) {
+    throw new AppError("Incorrect password", 400);
   }
 
   // Delete user (CASCADE will handle related data)
-  await db.query('DELETE FROM users WHERE id = $1', [userId]);
+  await db.query("DELETE FROM users WHERE id = $1", [userId]);
 
-  return { 
-    message: 'Account deleted successfully',
-    username: userCheck.rows[0].username 
+  return {
+    message: "Account deleted successfully",
+    username: userCheck.rows[0].username,
   };
 };

@@ -46,7 +46,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
 // @route   DELETE /api/v1/user
 // @access  Private
 export const deleteAccount = asyncHandler(async (req, res) => {
-  const data = await deleteUserAccount(req.user.id);
+  const { password } = req.body || {};
+
+  const data = await deleteUserAccount(req.user.id, password);
 
   return successResponse(res, 200, "Account deleted successfully", data);
 });

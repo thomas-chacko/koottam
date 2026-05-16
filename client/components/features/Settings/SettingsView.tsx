@@ -18,10 +18,12 @@ import {
   UserMinus,
   Smartphone,
   Settings,
+  Loader2,
 } from "lucide-react";
 import { useLocalLenis } from "@/hooks/useLocalLenis";
 import { useAuthStore } from "@/store/useAuthStore";
 import { authService } from "@/services/auth.service";
+import { userService } from "@/services/user.service";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -80,6 +82,29 @@ export function SettingsView() {
       router.push("/login");
     } catch (error) {
       toast.error("Failed to log out");
+    }
+  };
+
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [deactivatePassword, setDeactivatePassword] = useState("");
+  const [isDeactivating, setIsDeactivating] = useState(false);
+
+  const handleDeactivate = async () => {
+    if (!deactivatePassword) {
+      toast.error("Please enter your password");
+      return;
+    }
+
+    try {
+      setIsDeactivating(true);
+      await userService.deleteAccount(deactivatePassword);
+      clearAuthStore();
+      toast.success("Account deactivated successfully");
+      router.push("/signup");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to deactivate account");
+    } finally {
+      setIsDeactivating(false);
     }
   };
 
@@ -239,7 +264,10 @@ export function SettingsView() {
                     <ChevronRight className="w-5 h-5 text-[#2a2a3e] group-hover:text-[#8B5CF6]" />
                   </button>
 
-                  <button className="w-full flex items-center justify-between px-4 py-4 hover:bg-[#1f1624] transition-colors cursor-pointer group border-b border-[#2a2a3e]/30">
+                  <button
+                    onClick={() => setShowDeactivateModal(true)}
+                    className="w-full flex items-center justify-between px-4 py-4 hover:bg-[#1f1624] transition-colors cursor-pointer group border-b border-[#2a2a3e]/30"
+                  >
                     <div className="flex gap-4 items-start text-left">
                       <UserMinus className="w-5 h-5 text-[#ef4444] shrink-0 mt-0.5" />
                       <div className="flex flex-col">
@@ -340,6 +368,62 @@ export function SettingsView() {
               <button
                 onClick={() => setShowLogoutModal(false)}
                 className="w-full py-2.5 bg-[#2a2a3e] text-white font-semibold rounded-lg hover:bg-[#3a3a4e] transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Deactivate Account Modal */}
+      {showDeactivateModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-[#1a1a2e] border border-red-500/30 rounded-2xl w-full max-w-md overflow-hidden flex flex-col p-6 text-center shadow-2xl">
+            <div className="w-12 h-12 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center mx-auto mb-4">
+              <UserMinus className="w-6 h-6" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Deactivate Account</h2>
+            <p className="text-[#9ca3af] text-sm mb-4 leading-relaxed">
+              Are you sure you want to delete your Koottam account? 
+              <br />
+              <span className="text-red-400 font-semibold">You will permanently lose all your progress, posts, followers, and bookmarks. This action cannot be undone.</span>
+            </p>
+            
+            <div className="text-left mb-6 mt-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                To continue, enter your password:
+              </label>
+              <input
+                type="password"
+                value={deactivatePassword}
+                onChange={(e) => setDeactivatePassword(e.target.value)}
+                placeholder="Current password"
+                className="w-full px-4 py-3 bg-[#0a0a0f] border border-[#2a2a3e] rounded-lg text-white focus:outline-none focus:border-red-500 transition-colors"
+              />
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleDeactivate}
+                disabled={isDeactivating || !deactivatePassword}
+                className="w-full py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center"
+              >
+                {isDeactivating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Deactivating...
+                  </>
+                ) : (
+                  "Permanently delete my account"
+                )}
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeactivateModal(false);
+                  setDeactivatePassword("");
+                }}
+                disabled={isDeactivating}
+                className="w-full py-2.5 bg-[#2a2a3e] text-white font-semibold rounded-lg hover:bg-[#3a3a4e] transition-colors cursor-pointer disabled:opacity-50"
               >
                 Cancel
               </button>
