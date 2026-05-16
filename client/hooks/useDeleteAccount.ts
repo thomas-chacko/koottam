@@ -9,10 +9,10 @@ export const useDeleteAccount = () => {
   const { logout } = useAuthStore();
   const router = useRouter();
 
-  const deleteAccount = async () => {
+  const deleteAccount = async (password: string) => {
     try {
       setDeleting(true);
-      await userService.deleteAccount();
+      await userService.deleteAccount(password);
 
       toast.success("Account deleted successfully");
       logout();
