@@ -52,18 +52,6 @@ const SETTINGS_CATEGORIES = [
     title: "Privacy and safety",
     desc: "Manage what information you see and share on Koottam.",
   },
-  {
-    id: "notifications",
-    icon: Bell,
-    title: "Notifications",
-    desc: "Select the kinds of notifications you get about your activities, interests, and recommendations.",
-  },
-  {
-    id: "accessibility",
-    icon: Eye,
-    title: "Accessibility, display, and languages",
-    desc: "Manage how Koottam content is displayed to you.",
-  },
 ];
 
 export function SettingsView() {
