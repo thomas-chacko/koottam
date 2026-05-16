@@ -2,11 +2,21 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { successResponse } from "../utils/response.js";
 import {
   getUserProfile,
+  getMyProfile,
   updateUserProfile,
   deleteUserAccount,
 } from "../services/userService.js";
 
-// @desc    Get user profile by username
+// @desc    Get current user profile (protected, includes sensitive info)
+// @route   GET /api/v1/user/me
+// @access  Private
+export const getMyAccountDetails = asyncHandler(async (req, res) => {
+  const data = await getMyProfile(req.user.id);
+
+  return successResponse(res, 200, "Current user profile retrieved successfully", data);
+});
+
+// @desc    Get user profile by username (public, safe fields only)
 // @route   GET /api/v1/user/:username
 // @access  Public
 export const getProfile = asyncHandler(async (req, res) => {

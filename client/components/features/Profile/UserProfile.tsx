@@ -6,7 +6,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { TrendingUp, Settings, MapPin, Calendar, Link as LinkIcon, Camera, Loader2, BadgeCheck } from 'lucide-react';
 import { useLocalLenis } from '@/hooks/useLocalLenis';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useUpdateProfile, useCloudinaryUpload, useUserProfile } from '@/hooks/useUser';
+import { useUpdateProfile, useCloudinaryUpload, useUserProfile, useMyProfile } from '@/hooks/useUser';
 import Image from 'next/image';
 import { EditProfileModal } from './EditProfileModal';
 
@@ -21,7 +21,7 @@ const formatWebsiteUrl = (url: string) => {
   return url;
 };
 
-export function UserProfile() {
+export function UserProfile({ username }: { username?: string }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('Posts');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -34,8 +34,15 @@ export function UserProfile() {
   const { updateProfile } = useUpdateProfile();
   const { uploadImage, uploading } = useCloudinaryUpload();
   
+  const isOwnProfile = !username || (authUser?.username === username);
+
   // Fetch profile data from API
-  const { profile, loading: profileLoading, refetch } = useUserProfile(authUser?.username || '');
+  const { profile: publicProfile, loading: publicLoading, refetch: publicRefetch } = useUserProfile(!isOwnProfile ? username : '', !isOwnProfile);
+  const { profile: privateProfile, loading: privateLoading, refetch: privateRefetch } = useMyProfile(isOwnProfile);
+
+  const profile = isOwnProfile ? privateProfile : publicProfile;
+  const profileLoading = isOwnProfile ? privateLoading : publicLoading;
+  const refetch = isOwnProfile ? privateRefetch : publicRefetch;
 
   useLocalLenis(mainFeedRef);
   useLocalLenis(rightSidebarRef);
@@ -134,24 +141,28 @@ export function UserProfile() {
                 )}
                 
                 {/* Cover Upload Button */}
-                <button
-                  onClick={() => coverInputRef.current?.click()}
-                  disabled={uploading}
-                  className="absolute top-2 right-2 p-2 bg-[#0a0a0f]/80 hover:bg-[#0a0a0f] rounded-full transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
-                >
-                  {uploading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Camera className="w-5 h-5" />
-                  )}
-                </button>
-                <input
-                  ref={coverInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverUpload}
-                  className="hidden"
-                />
+                {isOwnProfile && (
+                  <>
+                    <button
+                      onClick={() => coverInputRef.current?.click()}
+                      disabled={uploading}
+                      className="absolute top-2 right-2 p-2 bg-[#0a0a0f]/80 hover:bg-[#0a0a0f] rounded-full transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                    >
+                      {uploading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Camera className="w-5 h-5" />
+                      )}
+                    </button>
+                    <input
+                      ref={coverInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverUpload}
+                      className="hidden"
+                    />
+                  </>
+                )}
               </div>
 
               {/* Avatar & Actions Row */}
@@ -171,33 +182,45 @@ export function UserProfile() {
                   )}
                   
                   {/* Avatar Upload Button */}
-                  <button
-                    onClick={() => avatarInputRef.current?.click()}
-                    disabled={uploading}
-                    className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  >
-                    {uploading ? (
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                    ) : (
-                      <Camera className="w-6 h-6" />
-                    )}
-                  </button>
-                  <input
-                    ref={avatarInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                  />
+                  {isOwnProfile && (
+                    <>
+                      <button
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={uploading}
+                        className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      >
+                        {uploading ? (
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                        ) : (
+                          <Camera className="w-6 h-6" />
+                        )}
+                      </button>
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        className="hidden"
+                      />
+                    </>
+                  )}
                 </div>
                 
                 <div className="mt-3 sm:mt-5 flex items-center gap-2">
-                  <button 
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="px-4 py-2 font-bold text-sm bg-[#ededed] text-[#0a0a0f] hover:bg-white rounded-full transition-colors cursor-pointer ml-1"
-                  >
-                    Edit Profile
-                  </button>
+                  {isOwnProfile ? (
+                    <button 
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="px-4 py-2 font-bold text-sm bg-[#ededed] text-[#0a0a0f] hover:bg-white rounded-full transition-colors cursor-pointer ml-1"
+                    >
+                      Edit Profile
+                    </button>
+                  ) : (
+                    <button 
+                      className="px-6 py-2 font-bold text-sm bg-white text-black hover:bg-[#ededed] rounded-full transition-colors cursor-pointer ml-1"
+                    >
+                      Follow
+                    </button>
+                  )}
                 </div>
               </div>
 

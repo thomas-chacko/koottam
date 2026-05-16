@@ -3,18 +3,18 @@ import api from "@/lib/axios";
 export interface UserProfile {
   id: string;
   username: string;
-  email: string;
+  email?: string;
   full_name: string | null;
   bio: string | null;
   avatar_url: string | null;
   cover_url: string | null;
   location: string | null;
   website: string | null;
-  role: string;
+  role?: string;
   is_verified: boolean;
-  is_active: boolean;
+  is_active?: boolean;
   is_private: boolean;
-  email_verified: boolean;
+  email_verified?: boolean;
   followers_count: number;
   following_count: number;
   posts_count: number;
@@ -39,6 +39,12 @@ interface ApiResponse<T> {
 }
 
 export const userService = {
+  // Get current user profile (includes sensitive data)
+  getMyProfile: async (): Promise<UserProfile> => {
+    const response = await api.get<ApiResponse<{ user: UserProfile }>>("/user/me");
+    return response.data.data.user;
+  },
+
   // Get user profile by username
   getProfile: async (username: string): Promise<UserProfile> => {
     const response = await api.get<ApiResponse<{ user: UserProfile }>>(
