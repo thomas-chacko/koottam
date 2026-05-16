@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Search, Bell, Menu, BadgeCheck } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { Search, Bell, Menu, BadgeCheck } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -40,15 +40,18 @@ export function Header({ onMenuClick }: HeaderProps) {
           </button>
 
           <Link href="/" className="hidden md:block cursor-pointer shrink-0">
-            <h1 className="text-xl md:text-2xl font-bold text-white"> <span className="text-[#8B5CF6]">K</span>oottam</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-white">
+              {" "}
+              <span className="text-[#8B5CF6]">K</span>oottam
+            </h1>
           </Link>
         </div>
 
         {/* Middle Column matching feed width */}
-        <div className="flex-1 min-w-0 max-w-[650px] mx-auto flex items-center justify-end md:justify-center h-full px-2">
+        <div className="flex-1 min-w-0 max-w-[650px] mx-auto flex items-center justify-end md:justify-center h-full">
           <div
             className={`relative flex items-center bg-[#1a1a2e] border border-[#2a2a3e] overflow-hidden transition-all duration-300 ease-in-out cursor-text
-              ${isSearchExpanded ? 'w-full rounded-xl' : 'w-10 h-10 md:w-full md:h-auto rounded-full md:rounded-xl'}`}
+              ${isSearchExpanded ? "w-full rounded-xl" : "w-10 h-10 md:w-full md:h-auto rounded-full md:rounded-xl"}`}
             onClick={() => {
               if (!isSearchExpanded) setIsSearchExpanded(true);
             }}
@@ -61,7 +64,9 @@ export function Header({ onMenuClick }: HeaderProps) {
                 if (!isSearchExpanded) {
                   setIsSearchExpanded(true);
                 } else if (searchQuery.trim()) {
-                  router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                  router.push(
+                    `/search?q=${encodeURIComponent(searchQuery.trim())}`,
+                  );
                 }
               }}
               aria-label="Search"
@@ -74,8 +79,10 @@ export function Header({ onMenuClick }: HeaderProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && searchQuery.trim()) {
-                  router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                if (e.key === "Enter" && searchQuery.trim()) {
+                  router.push(
+                    `/search?q=${encodeURIComponent(searchQuery.trim())}`,
+                  );
                   setIsSearchExpanded(false);
                   if (document.activeElement instanceof HTMLElement) {
                     document.activeElement.blur();
@@ -84,9 +91,9 @@ export function Header({ onMenuClick }: HeaderProps) {
               }}
               placeholder="Search Koottam..."
               className={`w-full pl-10 pr-4 py-2 bg-transparent text-sm md:text-base text-white placeholder-[#9ca3af] focus:outline-none transition-opacity duration-200
-                ${isSearchExpanded ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}
+                ${isSearchExpanded ? "opacity-100" : "opacity-0 md:opacity-100"}`}
               onBlur={(e) => {
-                if (e.target.value.trim() === '') {
+                if (e.target.value.trim() === "") {
                   setIsSearchExpanded(false);
                 }
               }}
@@ -112,13 +119,13 @@ export function Header({ onMenuClick }: HeaderProps) {
                 aria-label="Profile"
               >
                 {user?.avatar_url ? (
-                  <img 
-                    src={user.avatar_url} 
-                    alt={user.username} 
+                  <img
+                    src={user.avatar_url}
+                    alt={user.username}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  user?.username?.[0]?.toUpperCase() ?? 'U'
+                  (user?.username?.[0]?.toUpperCase() ?? "U")
                 )}
               </Link>
             </>
@@ -149,13 +156,13 @@ export function Header({ onMenuClick }: HeaderProps) {
                 aria-label="Profile"
               >
                 {user?.avatar_url ? (
-                  <img 
-                    src={user.avatar_url} 
-                    alt={user.username} 
+                  <img
+                    src={user.avatar_url}
+                    alt={user.username}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  user?.username?.[0]?.toUpperCase() ?? 'U'
+                  (user?.username?.[0]?.toUpperCase() ?? "U")
                 )}
               </Link>
             </>

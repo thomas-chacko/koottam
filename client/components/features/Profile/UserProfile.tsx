@@ -1,19 +1,39 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { Header } from '@/components/layout/Header';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { TrendingUp, Settings, MapPin, Calendar, Link as LinkIcon, Camera, Loader2, BadgeCheck } from 'lucide-react';
-import { useLocalLenis } from '@/hooks/useLocalLenis';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useUpdateProfile, useCloudinaryUpload, useUserProfile, useMyProfile } from '@/hooks/useUser';
-import Image from 'next/image';
-import { EditProfileModal } from './EditProfileModal';
+import { useState, useRef } from "react";
+import { Header } from "@/components/layout/Header";
+import { Sidebar } from "@/components/layout/Sidebar";
+import {
+  TrendingUp,
+  Settings,
+  MapPin,
+  Calendar,
+  Link as LinkIcon,
+  Camera,
+  Loader2,
+  BadgeCheck,
+} from "lucide-react";
+import { useLocalLenis } from "@/hooks/useLocalLenis";
+import { useAuthStore } from "@/store/useAuthStore";
+import {
+  useUpdateProfile,
+  useCloudinaryUpload,
+  useUserProfile,
+  useMyProfile,
+} from "@/hooks/useUser";
+import Image from "next/image";
+import { EditProfileModal } from "./EditProfileModal";
 
-const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
 
 const formatWebsiteUrl = (url: string) => {
-  if (!url) return '';
+  if (!url) return "";
   // If URL doesn't start with http:// or https://, add https://
   if (!/^https?:\/\//i.test(url)) {
     return `https://${url}`;
@@ -23,7 +43,7 @@ const formatWebsiteUrl = (url: string) => {
 
 export function UserProfile({ username }: { username?: string }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('Posts');
+  const [activeTab, setActiveTab] = useState("Posts");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const mainFeedRef = useRef<HTMLElement>(null);
   const rightSidebarRef = useRef<HTMLElement>(null);
@@ -33,12 +53,20 @@ export function UserProfile({ username }: { username?: string }) {
   const { user: authUser } = useAuthStore();
   const { updateProfile } = useUpdateProfile();
   const { uploadImage, uploading } = useCloudinaryUpload();
-  
-  const isOwnProfile = !username || (authUser?.username === username);
+
+  const isOwnProfile = !username || authUser?.username === username;
 
   // Fetch profile data from API
-  const { profile: publicProfile, loading: publicLoading, refetch: publicRefetch } = useUserProfile(!isOwnProfile ? username : '', !isOwnProfile);
-  const { profile: privateProfile, loading: privateLoading, refetch: privateRefetch } = useMyProfile(isOwnProfile);
+  const {
+    profile: publicProfile,
+    loading: publicLoading,
+    refetch: publicRefetch,
+  } = useUserProfile(!isOwnProfile ? username : "", !isOwnProfile);
+  const {
+    profile: privateProfile,
+    loading: privateLoading,
+    refetch: privateRefetch,
+  } = useMyProfile(isOwnProfile);
 
   const profile = isOwnProfile ? privateProfile : publicProfile;
   const profileLoading = isOwnProfile ? privateLoading : publicLoading;
@@ -52,7 +80,7 @@ export function UserProfile({ username }: { username?: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const imageUrl = await uploadImage(file, 'avatar');
+    const imageUrl = await uploadImage(file, "avatar");
     if (imageUrl) {
       await updateProfile({ avatar_url: imageUrl });
       // Refetch profile to get updated data
@@ -65,7 +93,7 @@ export function UserProfile({ username }: { username?: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const imageUrl = await uploadImage(file, 'cover');
+    const imageUrl = await uploadImage(file, "cover");
     if (imageUrl) {
       await updateProfile({ cover_url: imageUrl });
       // Refetch profile to get updated data
@@ -108,19 +136,22 @@ export function UserProfile({ username }: { username?: string }) {
         </div>
 
         {/* Main Feed Content */}
-        <main ref={mainFeedRef} className="flex-1 w-full max-w-[650px] mx-auto overflow-y-auto relative scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <main
+          ref={mainFeedRef}
+          className="flex-1 w-full max-w-[650px] mx-auto overflow-y-auto relative scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
           <div className="w-full min-h-full pb-12">
-            
             {/* Header Sticky */}
-            <div className="sticky top-0 z-20 bg-[#0a0a0f]/80 backdrop-blur-md border-b border-[#2a2a3e] px-4 py-3 flex items-center gap-4 w-full">
+            <div className="sticky top-0 z-20 bg-[#0a0a0f]/80 backdrop-blur-md border-b border-[#2a2a3e] px-2 py-3 flex items-center gap-4 w-full">
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <h1 className="text-xl font-bold text-white tracking-tight leading-tight">{displayUser.full_name || displayUser.username}</h1>
-                  {displayUser.is_verified && (
-                    <BadgeCheck className="w-5 h-5 text-white fill-[#8B5CF6]" />
-                  )}
+                  <h1 className="text-xl font-bold text-white tracking-tight leading-tight">
+                    {displayUser.full_name || displayUser.username}
+                  </h1>
                 </div>
-                <p className="text-xs text-[#9ca3af] font-medium tracking-wide">{displayUser.posts_count} posts</p>
+                <p className="text-xs text-[#9ca3af] font-medium tracking-wide">
+                  {displayUser.posts_count} posts
+                </p>
               </div>
             </div>
 
@@ -129,17 +160,17 @@ export function UserProfile({ username }: { username?: string }) {
               {/* Cover Photo */}
               <div className="h-32 sm:h-48 w-full bg-[#2a2a3e] relative group">
                 {displayUser.cover_url ? (
-                  <Image 
-                    src={displayUser.cover_url} 
-                    alt="Profile Cover" 
-                    fill 
+                  <Image
+                    src={displayUser.cover_url}
+                    alt="Profile Cover"
+                    fill
                     className="object-cover opacity-80"
                     priority
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-[#2a2a3e] to-[#1a1a2e]" />
                 )}
-                
+
                 {/* Cover Upload Button */}
                 {isOwnProfile && (
                   <>
@@ -169,18 +200,20 @@ export function UserProfile({ username }: { username?: string }) {
               <div className="px-4 flex justify-between items-start relative pb-4">
                 <div className="relative -mt-12 sm:-mt-16 w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#0a0a0f] bg-[#2a2a3e] shrink-0 z-10 flex items-center justify-center overflow-hidden group">
                   {displayUser.avatar_url ? (
-                    <Image 
-                      src={displayUser.avatar_url} 
-                      alt={displayUser.full_name || displayUser.username} 
-                      fill 
+                    <Image
+                      src={displayUser.avatar_url}
+                      alt={displayUser.full_name || displayUser.username}
+                      fill
                       className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-2xl">
-                      {getInitials(displayUser.full_name || displayUser.username)}
+                      {getInitials(
+                        displayUser.full_name || displayUser.username,
+                      )}
                     </div>
                   )}
-                  
+
                   {/* Avatar Upload Button */}
                   {isOwnProfile && (
                     <>
@@ -205,19 +238,17 @@ export function UserProfile({ username }: { username?: string }) {
                     </>
                   )}
                 </div>
-                
+
                 <div className="mt-3 sm:mt-5 flex items-center gap-2">
                   {isOwnProfile ? (
-                    <button 
+                    <button
                       onClick={() => setIsEditModalOpen(true)}
                       className="px-4 py-2 font-bold text-sm bg-[#ededed] text-[#0a0a0f] hover:bg-white rounded-full transition-colors cursor-pointer ml-1"
                     >
                       Edit Profile
                     </button>
                   ) : (
-                    <button 
-                      className="px-6 py-2 font-bold text-sm bg-white text-black hover:bg-[#ededed] rounded-full transition-colors cursor-pointer ml-1"
-                    >
+                    <button className="px-6 py-2 font-bold text-sm bg-white text-black hover:bg-[#ededed] rounded-full transition-colors cursor-pointer ml-1">
                       Follow
                     </button>
                   )}
@@ -227,13 +258,17 @@ export function UserProfile({ username }: { username?: string }) {
               {/* Profile Details */}
               <div className="px-4 pb-4">
                 <div className="flex items-center gap-1.5 mb-1">
-                  <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">{displayUser.full_name || displayUser.username}</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">
+                    {displayUser.full_name || displayUser.username}
+                  </h2>
                   {displayUser.is_verified && (
                     <BadgeCheck className="w-5 h-5 text-white fill-[#8B5CF6]" />
                   )}
                 </div>
-                <p className="text-[#9ca3af] text-sm md:text-base font-medium mb-3">@{displayUser.username}</p>
-                
+                <p className="text-[#9ca3af] text-sm md:text-base font-medium mb-3">
+                  @{displayUser.username}
+                </p>
+
                 {displayUser.bio && (
                   <p className="text-[#ededed] text-sm sm:text-base leading-relaxed mb-4 whitespace-pre-wrap max-w-2xl">
                     {displayUser.bio}
@@ -247,21 +282,36 @@ export function UserProfile({ username }: { username?: string }) {
                     </span>
                   )}
                   {displayUser.website && (
-                    <a href={formatWebsiteUrl(displayUser.website)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 font-medium text-[#8B5CF6] hover:underline cursor-pointer">
+                    <a
+                      href={formatWebsiteUrl(displayUser.website)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 font-medium text-[#8B5CF6] hover:underline cursor-pointer"
+                    >
                       <LinkIcon className="w-4 h-4" /> {displayUser.website}
                     </a>
                   )}
                   <span className="flex items-center gap-1.5 font-medium">
-                    <Calendar className="w-4 h-4" /> Joined {new Date(displayUser.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    <Calendar className="w-4 h-4" /> Joined{" "}
+                    {new Date(displayUser.created_at).toLocaleDateString(
+                      "en-US",
+                      { month: "long", year: "numeric" },
+                    )}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-5 text-sm">
                   <button className="hover:underline cursor-pointer group">
-                    <span className="font-bold text-white group-hover:text-white transition-colors">{displayUser.following_count}</span> <span className="text-[#9ca3af]">Following</span>
+                    <span className="font-bold text-white group-hover:text-white transition-colors">
+                      {displayUser.following_count}
+                    </span>{" "}
+                    <span className="text-[#9ca3af]">Following</span>
                   </button>
                   <button className="hover:underline cursor-pointer group">
-                    <span className="font-bold text-white group-hover:text-white transition-colors">{displayUser.followers_count}</span> <span className="text-[#9ca3af]">Followers</span>
+                    <span className="font-bold text-white group-hover:text-white transition-colors">
+                      {displayUser.followers_count}
+                    </span>{" "}
+                    <span className="text-[#9ca3af]">Followers</span>
                   </button>
                 </div>
               </div>
@@ -269,18 +319,20 @@ export function UserProfile({ username }: { username?: string }) {
 
             {/* Profile Nav Tabs */}
             <nav className="flex items-center justify-between border-b border-[#2a2a3e] px-4 font-semibold text-sm bg-[#0a0a0f] mb-2">
-              {['Posts', 'Replies', 'Highlights', 'Media', 'Likes'].map((tab) => (
-                <button 
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`relative py-4 px-1 flex-1 text-center cursor-pointer transition-colors hover:bg-[#1a1a2e]/60 ${activeTab === tab ? 'text-white' : 'text-[#9ca3af] hover:text-[#ededed]'}`}
-                >
-                  {tab}
-                  {activeTab === tab && (
-                    <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#8B5CF6] rounded-t-full" />
-                  )}
-                </button>
-              ))}
+              {["Posts", "Replies", "Highlights", "Media", "Likes"].map(
+                (tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`relative py-4 px-1 flex-1 text-center cursor-pointer transition-colors hover:bg-[#1a1a2e]/60 ${activeTab === tab ? "text-white" : "text-[#9ca3af] hover:text-[#ededed]"}`}
+                  >
+                    {tab}
+                    {activeTab === tab && (
+                      <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#8B5CF6] rounded-t-full" />
+                    )}
+                  </button>
+                ),
+              )}
             </nav>
 
             {/* Posts Feed */}
@@ -288,12 +340,16 @@ export function UserProfile({ username }: { username?: string }) {
               {displayUser.posts_count === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-[#9ca3af] text-lg">No posts yet</p>
-                  <p className="text-[#6b7280] text-sm mt-2">Start sharing your thoughts!</p>
+                  <p className="text-[#6b7280] text-sm mt-2">
+                    Start sharing your thoughts!
+                  </p>
                 </div>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-[#9ca3af]">Posts will appear here</p>
-                  <p className="text-[#6b7280] text-sm mt-2">Post API coming soon...</p>
+                  <p className="text-[#6b7280] text-sm mt-2">
+                    Post API coming soon...
+                  </p>
                 </div>
               )}
             </div>
@@ -301,13 +357,18 @@ export function UserProfile({ username }: { username?: string }) {
         </main>
 
         {/* Right Sidebar */}
-        <aside ref={rightSidebarRef} className="hidden xl:block w-[350px] overflow-y-auto shrink-0 flex-none h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pl-4">
+        <aside
+          ref={rightSidebarRef}
+          className="hidden xl:block w-[350px] overflow-y-auto shrink-0 flex-none h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pl-4"
+        >
           <div className="py-6 space-y-6">
             <section className="bg-[#1a1a2e] border border-[#2a2a3e] rounded-xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-[#8B5CF6]" />
-                  <h2 className="text-lg font-bold text-white">Trending for you</h2>
+                  <h2 className="text-lg font-bold text-white">
+                    Trending for you
+                  </h2>
                 </div>
                 <button className="p-2 hover:bg-[#2a2a3e] rounded-full transition-colors cursor-pointer group">
                   <Settings className="w-4 h-4 text-[#9ca3af] group-hover:text-white" />
@@ -316,16 +377,32 @@ export function UserProfile({ username }: { username?: string }) {
 
               <div className="space-y-2">
                 {[
-                  { category: 'ARTS & CULTURE', tag: '#ModernArt2024', posts: '2.5K posts' },
-                  { category: 'SOCIAL', tag: '#KoottamCommunity', posts: '12.2K posts' },
-                  { category: 'TECHNOLOGY', tag: '#NextGenDesign', posts: '8.3K posts' }
+                  {
+                    category: "ARTS & CULTURE",
+                    tag: "#ModernArt2024",
+                    posts: "2.5K posts",
+                  },
+                  {
+                    category: "SOCIAL",
+                    tag: "#KoottamCommunity",
+                    posts: "12.2K posts",
+                  },
+                  {
+                    category: "TECHNOLOGY",
+                    tag: "#NextGenDesign",
+                    posts: "8.3K posts",
+                  },
                 ].map((trend, index) => (
                   <button
                     key={index}
                     className="block w-full text-left hover:bg-[#2a2a3e] rounded-lg p-3 transition-colors cursor-pointer group"
                   >
-                    <p className="text-[11px] text-[#6b7280] font-semibold tracking-wider mb-1 uppercase">{trend.category}</p>
-                    <p className="text-white font-semibold mb-1 group-hover:text-[#8B5CF6] transition-colors">{trend.tag}</p>
+                    <p className="text-[11px] text-[#6b7280] font-semibold tracking-wider mb-1 uppercase">
+                      {trend.category}
+                    </p>
+                    <p className="text-white font-semibold mb-1 group-hover:text-[#8B5CF6] transition-colors">
+                      {trend.tag}
+                    </p>
                     <p className="text-xs text-[#9ca3af]">{trend.posts}</p>
                   </button>
                 ))}
@@ -341,10 +418,10 @@ export function UserProfile({ username }: { username?: string }) {
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={refetch}
         currentProfile={{
-          full_name: displayUser.full_name || '',
-          bio: displayUser.bio || '',
-          location: displayUser.location || '',
-          website: displayUser.website || '',
+          full_name: displayUser.full_name || "",
+          bio: displayUser.bio || "",
+          location: displayUser.location || "",
+          website: displayUser.website || "",
         }}
       />
     </div>

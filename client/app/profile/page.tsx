@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
-import { UserProfile } from '@/components/features/Profile/UserProfile';
+import type { Metadata } from "next";
+import { UserProfile } from "@/components/features/Profile/UserProfile";
 
 export const metadata: Metadata = {
-  title: 'Profile - Koottam',
-  description: 'View and manage your Koottam profile and posts.',
+  title: "Profile - Koottam",
+  description: "View and manage your Koottam profile and posts.",
 };
 
 export default function ProfilePage() {
