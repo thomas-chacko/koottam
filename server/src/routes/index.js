@@ -3,6 +3,8 @@ import authRoutes from "./authRoutes.js";
 import userRoutes from "./userRoutes.js";
 import mediaRoutes from "./mediaRoutes.js";
 
+import searchRoutes from "./searchRoutes.js";
+
 const router = Router();
 
 // ─── Health Check
@@ -13,6 +15,9 @@ router.get("/health", (_req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// ─── Global Search Routes
+router.use("/search", searchRoutes);
 
 // ─── Authentication Routes
 router.use("/auth", authRoutes);

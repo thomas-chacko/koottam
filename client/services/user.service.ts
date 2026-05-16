@@ -39,6 +39,7 @@ interface ApiResponse<T> {
 }
 
 export const userService = {
+
   // Get current user profile (includes sensitive data)
   getMyProfile: async (): Promise<UserProfile> => {
     const response = await api.get<ApiResponse<{ user: UserProfile }>>("/user/me");
