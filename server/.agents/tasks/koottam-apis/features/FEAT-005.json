@@ -1,0 +1,41 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Implement Stories and Hashtags APIs with create/delete stories, get story feeds, view tracking, auto-expire logic, hashtag details, trending hashtags, posts by hashtag, and hashtag search",
+  "status": "pending",
+  "steps": [
+    "Create src/controllers/storyController.js with createStory (POST /api/v1/story with media_url required, auto-set expires_at to 24 hours from now), getStoryFeed (GET /api/v1/story/feed - stories from followed users not expired), getUserStories (GET /api/v1/story/user/:userId - all active stories for a user), viewStory (POST /api/v1/story/:id/view - track story view), deleteStory (DELETE /api/v1/story/:id - owner only), and getStoryViewers (GET /api/v1/story/:id/viewers?limit&offset - get list of users who viewed story, owner only) handlers. All use asyncHandler, protect middleware, AppError, and successResponse",
+    "Create src/services/storyService.js with functions: createStory (insert into stories table with user_id, media_url, expires_at set to NOW() + INTERVAL '24 hours', return story record), getStoryFeed (query stories from users the authenticated user follows WHERE expires_at > NOW() AND stories.user_id IN (SELECT following_id FROM follows WHERE follower_id=$1), include author details, group by user to show most recent story per user, ORDER BY created_at DESC), getUserStories (query stories WHERE user_id=$1 AND expires_at > NOW() ORDER BY created_at DESC), viewStory (insert into post_views or similar tracking table - note: schema has post_views but not story_views, may need to track in separate logic or reuse table, increment stories.view_count, prevent duplicate views per user per story), deleteStory (verify ownership, DELETE FROM stories WHERE id=$1 AND user_id=$2), getStoryViewers (query tracking records for story, join with users, paginate, owner-only check). Use parameterized queries and transactions",
+    "Create src/routes/storyRoutes.js with Express Router: POST / (protect, createStory), GET /feed (protect, getStoryFeed), GET /user/:userId (getUserStories public but filtered by privacy), GET /:id/viewers (protect, getStoryViewers), POST /:id/view (protect, viewStory), DELETE /:id (protect, deleteStory)",
+    "Create src/controllers/hashtagController.js with getHashtagDetails (GET /api/v1/hashtag/:name - returns hashtag with post_count), getTrendingHashtags (GET /api/v1/hashtag/trending?limit - top hashtags by post_count in last 7 days), getPostsByHashtag (GET /api/v1/hashtag/:name/posts?limit&offset - all posts with this hashtag), and searchHashtags (GET /api/v1/hashtag/search?q=query&limit - search hashtags by name pattern) handlers. All use asyncHandler, AppError, and successResponse. Public endpoints, no auth required",
+    "Create src/services/hashtagService.js with functions: getHashtagDetails (query hashtags table WHERE name=$1, return hashtag with id, name, post_count, created_at), getTrendingHashtags (query hashtags joined with post_hashtags joined with posts WHERE posts.created_at > NOW() - INTERVAL '7 days' GROUP BY hashtag ORDER BY COUNT(*) DESC LIMIT $1, return top hashtags), getPostsByHashtag (query posts joined with post_hashtags joined with hashtags WHERE hashtags.name=$1 ORDER BY posts.created_at DESC, include post details with author, paginate), searchHashtags (query hashtags WHERE name ILIKE $1 ORDER BY post_count DESC LIMIT $2, use pattern '%query%' for search). Use parameterized queries",
+    "Create src/routes/hashtagRoutes.js with Express Router: GET /trending (getTrendingHashtags), GET /search (searchHashtags), GET /:name (getHashtagDetails), GET /:name/posts (getPostsByHashtag)",
+    "Add database cleanup job note in findings: Story auto-expiry requires either a cron job or cleanup query. For now, queries filter WHERE expires_at > NOW() to only show active stories. Recommend adding background job in future to delete expired stories and their views to keep database clean",
+    "Register storyRoutes and hashtagRoutes in src/routes/index.js: import both, add router.use('/story', storyRoutes) and router.use('/hashtag', hashtagRoutes)"
+  ],
+  "acceptance_criteria": [
+    "Stories automatically set expires_at to 24 hours from creation time",
+    "Story feed returns only non-expired stories from followed users",
+    "Story view tracking prevents duplicate views per user per story",
+    "Delete story verifies ownership - only creator can delete their story",
+    "Story viewers list is owner-only - returns 403 if non-owner tries to access",
+    "Hashtag details return accurate post_count",
+    "Trending hashtags return top hashtags from posts created in last 7 days",
+    "Posts by hashtag returns posts with that tag in reverse chronological order",
+    "Hashtag search is case-insensitive and supports partial matching",
+    "All queries filter expired stories using WHERE expires_at > NOW()"
+  ],
+  "verification": [
+    "npm test - all tests pass",
+    "Manual test: POST /api/v1/story creates story with expires_at set 24 hours in future",
+    "Manual test: GET /api/v1/story/feed returns only non-expired stories from followed users",
+    "Manual test: POST /api/v1/story/:id/view increments view_count, duplicate view from same user doesn't increment",
+    "Manual test: GET /api/v1/story/:id/viewers returns viewer list only if requester is story owner",
+    "Manual test: GET /api/v1/hashtag/trending returns hashtags with highest post count in last 7 days",
+    "Manual test: GET /api/v1/hashtag/:name/posts returns posts tagged with that hashtag",
+    "Manual test: GET /api/v1/hashtag/search?q=test returns hashtags matching pattern case-insensitively",
+    "Verify stories table has correct schema with expires_at TIMESTAMP and proper indexes"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

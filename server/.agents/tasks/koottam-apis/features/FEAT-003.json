@@ -1,0 +1,38 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement Bookmarks, Shares, and Post Views APIs with bookmark/unbookmark operations, share/unshare posts, view tracking, and proper counter updates",
+  "status": "pending",
+  "steps": [
+    "Create src/controllers/bookmarkController.js with bookmarkPost (POST /api/v1/bookmark/:postId), unbookmarkPost (DELETE /api/v1/bookmark/:postId), getBookmarkedPosts (GET /api/v1/bookmark?limit&offset), and checkBookmarkStatus (GET /api/v1/bookmark/status/:postId) handlers. All use asyncHandler, protect middleware, AppError, and successResponse",
+    "Create src/services/bookmarkService.js with functions: bookmarkPost (check if already bookmarked via UNIQUE constraint, insert into bookmarks table with user_id and post_id, return bookmark record), unbookmarkPost (delete from bookmarks WHERE user_id=$1 AND post_id=$2, throw 404 if not found), getBookmarkedPosts (query posts joined with bookmarks WHERE bookmarks.user_id=$1 ORDER BY bookmarks.created_at DESC, include full post details with author, paginate), checkBookmarkStatus (query bookmarks table, return boolean). Handle duplicate bookmark attempts gracefully",
+    "Create src/routes/bookmarkRoutes.js with Express Router: POST /:postId (protect, bookmarkPost), DELETE /:postId (protect, unbookmarkPost), GET / (protect, getBookmarkedPosts), GET /status/:postId (protect, checkBookmarkStatus)",
+    "Create src/controllers/shareController.js with sharePost (POST /api/v1/share/:postId), deleteShare (DELETE /api/v1/share/:shareId), getUserShares (GET /api/v1/share/user/:userId?limit&offset), getPostSharers (GET /api/v1/share/post/:postId/sharers?limit&offset) handlers. Use asyncHandler, protect for mutations, AppError, and successResponse",
+    "Create src/services/shareService.js with functions: sharePost (begin transaction, insert into shares table with user_id and post_id, increment posts.share_count, commit, return share record with post details), deleteShare (transaction, verify ownership, delete share by id, decrement posts.share_count with GREATEST(share_count - 1, 0), commit), getUserShares (query shares with post details WHERE shares.user_id=$1 ORDER BY created_at DESC, paginate), getPostSharers (query users who shared post with share timestamp, paginate). Use db.query with parameterized statements and transactions",
+    "Create src/routes/shareRoutes.js with Express Router: POST /:postId (protect, sharePost), DELETE /:shareId (protect, deleteShare), GET /user/:userId (getUserShares public), GET /post/:postId/sharers (getPostSharers public)",
+    "Create src/controllers/viewController.js with recordView (POST /api/v1/view/:postId) and getPostViewCount (GET /api/v1/view/:postId/count) handlers. recordView uses protect middleware, getPostViewCount is public",
+    "Create src/services/viewService.js with functions: recordView (check if user already viewed this post today using post_views table with created_at date check to avoid duplicate counts, if not viewed today insert into post_views with post_id and user_id, increment posts.view_count, return view record), getPostViewCount (query posts.view_count for given post_id). Use idempotent view tracking - one view per user per post per day",
+    "Create src/routes/viewRoutes.js with Express Router: POST /:postId (protect, recordView), GET /:postId/count (getPostViewCount public)",
+    "Register bookmarkRoutes, shareRoutes, and viewRoutes in src/routes/index.js: import all three, add router.use('/bookmark', bookmarkRoutes), router.use('/share', shareRoutes), and router.use('/view', viewRoutes)"
+  ],
+  "acceptance_criteria": [
+    "Bookmark operations use UNIQUE constraint (user_id, post_id) to prevent duplicates",
+    "Bookmarked posts list ordered by bookmark created_at DESC (most recently bookmarked first)",
+    "Share operations correctly increment/decrement posts.share_count",
+    "Delete share verifies ownership - only the user who shared can delete their share",
+    "View tracking prevents duplicate views - same user viewing same post multiple times in one day counts as one view",
+    "View count increments only on first view per user per post per day",
+    "All protected endpoints require valid JWT token",
+    "All database operations use transactions where appropriate"
+  ],
+  "verification": [
+    "npm test - all tests pass",
+    "Manual test: POST /api/v1/bookmark/:postId bookmarks post, second attempt returns error due to UNIQUE constraint",
+    "Manual test: GET /api/v1/bookmark returns user's bookmarked posts with full details",
+    "Manual test: POST /api/v1/share/:postId increments share_count in posts table",
+    "Manual test: POST /api/v1/view/:postId increments view_count on first view, subsequent views on same day don't increment",
+    "Verify database constraints: bookmarks table has UNIQUE(user_id, post_id), all foreign keys CASCADE properly"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

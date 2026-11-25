@@ -1,0 +1,36 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement Follow System and Feed APIs with follow/unfollow operations, followers/following lists, follow suggestions, check follow status, personalized home feed, and explore/trending feed",
+  "status": "pending",
+  "steps": [
+    "Create src/controllers/followController.js with followUser (POST /api/v1/follow/:userId), unfollowUser (DELETE /api/v1/follow/:userId), getFollowers (GET /api/v1/follow/:userId/followers?limit&offset), getFollowing (GET /api/v1/follow/:userId/following?limit&offset), checkFollowStatus (GET /api/v1/follow/status/:userId), and getSuggestedUsers (GET /api/v1/follow/suggestions?limit) handlers. All use asyncHandler, protect middleware for mutations, AppError, and successResponse",
+    "Create src/services/followService.js with functions: followUser (begin transaction, check if already following, insert into follows table with follower_id and following_id, increment users.followers_count for following_id and users.following_count for follower_id, commit, return follow record), unfollowUser (transaction, delete from follows, decrement both counters with GREATEST(count - 1, 0)), getFollowers (query users joined with follows WHERE following_id=$1, paginate), getFollowing (query WHERE follower_id=$1, paginate), checkFollowStatus (query follows table for record), getSuggestedUsers (query users not followed by current user, order by followers_count DESC or random, exclude self, limit results). Handle edge cases: cannot follow self, cannot follow twice",
+    "Create src/routes/followRoutes.js with Express Router: POST /:userId (protect, followUser), DELETE /:userId (protect, unfollowUser), GET /:userId/followers (getFollowers public), GET /:userId/following (getFollowing public), GET /status/:userId (protect, checkFollowStatus), GET /suggestions (protect, getSuggestedUsers)",
+    "Create src/controllers/feedController.js with getHomeFeed (GET /api/v1/feed/home?limit&offset&cursor) and getExploreFeed (GET /api/v1/feed/explore?limit&offset) handlers. Both require protect middleware, use pagination, return posts with author details and engagement metrics",
+    "Create src/services/feedService.js with functions: getHomeFeed (query posts from users the authenticated user follows plus their own posts, ORDER BY created_at DESC for chronological feed, include post details with author, like_count, comment_count, share_count, check if current user liked/bookmarked each post, support cursor-based or offset pagination), getExploreFeed (query public posts from all users, order by engagement score calculated from like_count + comment_count*2 + share_count*3 + view_count*0.1 and recency, filter recent posts from last 7 days, exclude posts from users current user follows to show new content, paginate). Both return posts array with full post objects matching existing post response format",
+    "Create src/routes/feedRoutes.js with Express Router: GET /home (protect, getHomeFeed), GET /explore (protect, getExploreFeed)",
+    "Register followRoutes and feedRoutes in src/routes/index.js: import both, add router.use('/follow', followRoutes) and router.use('/feed', feedRoutes)"
+  ],
+  "acceptance_criteria": [
+    "Follow/unfollow operations correctly update followers_count and following_count in users table",
+    "Cannot follow the same user twice - returns appropriate error",
+    "Cannot follow self - returns 400 error",
+    "Followers and following lists return user objects with username, full_name, avatar_url, is_verified",
+    "Follow suggestions exclude already-followed users and self",
+    "Home feed returns posts from followed users in chronological order",
+    "Explore feed returns trending posts from non-followed users based on engagement",
+    "All feed responses include whether current user has liked/bookmarked each post",
+    "Pagination works correctly with limit/offset for all list endpoints"
+  ],
+  "verification": [
+    "npm test - all tests pass",
+    "Manual test: POST /api/v1/follow/:userId successfully follows user and increments counters",
+    "Manual test: DELETE /api/v1/follow/:userId unfollows and decrements counters",
+    "Manual test: GET /api/v1/feed/home returns posts from followed users only",
+    "Manual test: GET /api/v1/feed/explore returns trending posts with high engagement",
+    "Verify follow suggestions exclude already followed users by checking suggestions list after following a user"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

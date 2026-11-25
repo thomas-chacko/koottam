@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement Likes and Comments APIs with full CRUD operations, nested replies support, like/unlike for posts and comments, pagination, and proper counter updates",
+  "status": "completed",
+  "steps": [
+    "Create src/controllers/likeController.js with likePost (POST /api/v1/like/post/:postId), unlikePost (DELETE /api/v1/like/post/:postId), likeComment (POST /api/v1/like/comment/:commentId), unlikeComment (DELETE /api/v1/like/comment/:commentId), getPostLikers (GET /api/v1/like/post/:postId/likers?limit&offset), getCommentLikers (GET /api/v1/like/comment/:commentId/likers?limit&offset), and checkLikeStatus (GET /api/v1/like/status?postId&commentId) handlers using asyncHandler, protect middleware, AppError for errors, and successResponse for responses",
+    "Create src/services/likeService.js with functions: likePost (insert into likes table with post_id, increment posts.like_count in transaction, return like record), unlikePost (delete from likes, decrement posts.like_count with GREATEST(like_count - 1, 0), handle not-found), likeComment (insert into likes with comment_id, increment comment like count - note: schema lacks comment like_count column, will work with current schema), unlikeComment (similar pattern), getPostLikers (query users who liked post with pagination), getCommentLikers (similar), checkLikeStatus (check if user liked given post or comment). All use db.query with parameterized statements",
+    "Create src/routes/likeRoutes.js with Express Router: POST /post/:postId (protect, likePost), DELETE /post/:postId (protect, unlikePost), POST /comment/:commentId (protect, likeComment), DELETE /comment/:commentId (protect, unlikeComment), GET /post/:postId/likers (getPostLikers public), GET /comment/:commentId/likers (getCommentLikers public), GET /status (protect, checkLikeStatus with query params postId or commentId)",
+    "Create src/controllers/commentController.js with createComment (POST /api/v1/comment/:postId with optional parent_id for nested replies, content required, max 500 chars), updateComment (PUT /api/v1/comment/:id, owner only), deleteComment (DELETE /api/v1/comment/:id, owner only with cascade for replies), getPostComments (GET /api/v1/comment/post/:postId?limit&offset, returns top-level comments with reply_count), getCommentReplies (GET /api/v1/comment/:id/replies?limit&offset, returns child comments), and getComment (GET /api/v1/comment/:id) handlers",
+    "Create src/services/commentService.js with functions: createComment (begin transaction, insert into comments table with post_id/parent_id/user_id/content, increment posts.comment_count, commit, return comment with author details), updateComment (verify ownership, update content and updated_at), deleteComment (verify ownership, delete with CASCADE to handle replies, decrement posts.comment_count), getPostComments (query top-level comments WHERE post_id=$1 AND parent_id IS NULL with user join, include like_count from likes table aggregate, paginate), getCommentReplies (query WHERE parent_id=$1, paginate), getComment (single comment by id with author). Use db transactions for multi-step operations",
+    "Create src/routes/commentRoutes.js with Express Router: POST /:postId (protect, createComment), GET /post/:postId (getPostComments public), GET /:id (getComment public), GET /:id/replies (getCommentReplies public), PUT /:id (protect, updateComment), DELETE /:id (protect, deleteComment)",
+    "Register likeRoutes and commentRoutes in src/routes/index.js: import both routes, add router.use('/like', likeRoutes) and router.use('/comment', commentRoutes) after existing routes"
+  ],
+  "acceptance_criteria": [
+    "All like and comment endpoints return proper JSON responses with success/message/data structure",
+    "Like/unlike operations correctly increment/decrement like_count in posts table",
+    "Comments support nested replies via parent_id with proper querying",
+    "All protected endpoints require valid JWT token via protect middleware",
+    "Database operations use parameterized queries to prevent SQL injection",
+    "Owner-only operations (update/delete comment) verify ownership and return 403 if unauthorized",
+    "Pagination works with limit/offset query parameters",
+    "Edge cases handled: liking already-liked post returns error, unliking non-existent like returns error, comment not found returns 404"
+  ],
+  "verification": [
+    "npm test - all existing tests continue to pass",
+    "Manual test with curl or Postman: POST /api/v1/like/post/:postId with valid auth token returns success and increments like_count",
+    "Manual test: POST /api/v1/comment/:postId creates comment and increments post comment_count",
+    "Manual test: GET /api/v1/comment/:id/replies returns nested replies when parent_id is set",
+    "Verify database integrity: check likes and comments tables have proper foreign key constraints and unique constraints"
+  ],
+  "blocked_reason": null,
+  "findings": "Successfully implemented all like and comment APIs. All controllers use asyncHandler wrapper, AppError for errors, and successResponse for responses. Services use parameterized SQL queries and transactions for multi-step operations. Routes registered with proper authentication via protect middleware. Comment deletion correctly handles nested replies with CASCADE and decrements comment_count appropriately. Like operations properly increment/decrement counters with floor at 0. All existing tests continue to pass."
+}

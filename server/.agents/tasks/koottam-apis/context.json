@@ -1,0 +1,28 @@
+{
+  "project_type": "Node.js Express REST API server with PostgreSQL database",
+  "language": "JavaScript (ES6 modules)",
+  "build_system": "npm with nodemon for development",
+  "test_framework": "Jest with supertest for API testing",
+  "build_command": "npm run dev (for development)",
+  "test_command": "npm test",
+  "verification_instructions": "Run npm test to execute Jest test suites. For manual testing, start the dev server with npm run dev and ensure database is running with npm run db:up",
+  "snapshot_or_generated_files": null,
+  "environment_constraints": "Requires PostgreSQL database running (Docker Compose available via npm run db:up). Database schema is defined in /home/yatnam/Desktop/Thomas/koottam/server/database/init.sql",
+  "contribution_requirements": "All new API endpoints must follow existing patterns: use asyncHandler wrapper, AppError for errors, successResponse for responses, protect middleware for authenticated routes, and parameterized SQL queries to prevent injection",
+  "key_patterns": "Controllers use asyncHandler, throw AppError for errors, return successResponse. Services handle database logic with transactions for multi-step operations. Routes use Express Router with protect middleware for auth. Database queries use pool.query with parameterized statements ($1, $2, etc.). Response format: {success: true/false, message: string, data: object}. All UUIDs, timestamps handled by PostgreSQL",
+  "relevant_files": [
+    "/home/yatnam/Desktop/Thomas/koottam/server/database/init.sql",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/config/db.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/middleware/auth.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/utils/asyncHandler.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/utils/AppError.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/utils/response.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/controllers/authController.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/controllers/postController.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/services/postService.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/routes/index.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/routes/authRoutes.js",
+    "/home/yatnam/Desktop/Thomas/koottam/server/src/routes/postRoutes.js"
+  ],
+  "directory_structure": "src/ contains: app.js (Express app setup), index.js (server entry), config/ (db.js, env.js), controllers/ (request handlers), services/ (business logic), routes/ (Express routers), middleware/ (auth.js, errorHandler.js, rateLimiter.js), utils/ (asyncHandler.js, AppError.js, response.js), test/ (Jest test files). Database schema in database/init.sql"
+}

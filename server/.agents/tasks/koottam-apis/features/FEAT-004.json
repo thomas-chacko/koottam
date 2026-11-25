@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Implement Notifications System with create, get, mark read/unread, delete, clear all, and unread count APIs with proper type handling for like, comment, follow, share, and mention notifications",
+  "status": "pending",
+  "steps": [
+    "Create src/controllers/notificationController.js with getNotifications (GET /api/v1/notification?limit&offset&filter=all|unread), markAsRead (PUT /api/v1/notification/:id/read), markAsUnread (PUT /api/v1/notification/:id/unread), markAllAsRead (PUT /api/v1/notification/read-all), deleteNotification (DELETE /api/v1/notification/:id), clearAllNotifications (DELETE /api/v1/notification/clear), and getUnreadCount (GET /api/v1/notification/unread-count) handlers. All use asyncHandler, protect middleware, AppError, and successResponse",
+    "Create src/services/notificationService.js with functions: getNotifications (query notifications WHERE user_id=$1, optionally filter WHERE is_read=false for unread, include actor details by joining users table on actor_id, include entity details by conditionally joining posts/comments tables based on entity_type, ORDER BY created_at DESC, paginate with limit/offset), markAsRead (UPDATE notifications SET is_read=true WHERE id=$1 AND user_id=$2, verify ownership), markAsUnread (similar UPDATE to false), markAllAsRead (UPDATE all user's notifications), deleteNotification (DELETE WHERE id=$1 AND user_id=$2, verify ownership), clearAllNotifications (DELETE FROM notifications WHERE user_id=$1), getUnreadCount (COUNT(*) WHERE user_id=$1 AND is_read=false). All use parameterized queries",
+    "Create src/routes/notificationRoutes.js with Express Router: GET / (protect, getNotifications with query params), GET /unread-count (protect, getUnreadCount), PUT /:id/read (protect, markAsRead), PUT /:id/unread (protect, markAsUnread), PUT /read-all (protect, markAllAsRead), DELETE /:id (protect, deleteNotification), DELETE /clear (protect, clearAllNotifications)",
+    "Create src/services/notificationHelper.js with helper function createNotification (called internally by other services when events occur) that accepts {userId, actorId, type, entityId, entityType} and inserts into notifications table. This will be imported and used by likeService, commentService, followService, shareService when creating likes/comments/follows/shares to automatically create notifications. Add calls to createNotification in: likeService.likePost (type='like', entity=post), likeService.likeComment (type='like', entity=comment), commentService.createComment (type='comment', entity=comment), followService.followUser (type='follow', entity=follow), shareService.sharePost (type='share', entity=post). Do not create notification if actor is the same as the recipient (don't notify users of their own actions)",
+    "Update existing service files to integrate notification creation: modify src/services/likeService.js to import createNotification and call it after successful like operations (get post/comment owner_id, call createNotification), modify src/services/commentService.js similarly for new comments, modify src/services/followService.js for new follows, modify src/services/shareService.js for new shares. Wrap notification creation in try-catch to prevent notification failures from breaking main operations",
+    "Register notificationRoutes in src/routes/index.js: import notificationRoutes, add router.use('/notification', notificationRoutes)"
+  ],
+  "acceptance_criteria": [
+    "Notifications are automatically created when users like posts/comments, comment on posts, follow other users, or share posts",
+    "Users do not receive notifications for their own actions (liking their own post, etc.)",
+    "Notification objects include actor details (username, avatar_url, full_name, is_verified) and entity context",
+    "Filter parameter works: ?filter=unread returns only unread notifications",
+    "Mark as read/unread operations verify ownership - users can only modify their own notifications",
+    "Unread count returns accurate count of is_read=false notifications",
+    "Clear all deletes all notifications for the authenticated user only",
+    "Notification creation failures do not break the primary operations (likes, comments, etc.)"
+  ],
+  "verification": [
+    "npm test - all tests pass",
+    "Manual test: Like a post as User A, verify User B (post owner) receives notification with type='like'",
+    "Manual test: Comment on a post, verify post owner receives notification",
+    "Manual test: Follow a user, verify they receive notification with type='follow'",
+    "Manual test: GET /api/v1/notification returns notifications with actor and entity details",
+    "Manual test: GET /api/v1/notification?filter=unread returns only unread notifications",
+    "Manual test: PUT /api/v1/notification/:id/read marks notification as read",
+    "Manual test: GET /api/v1/notification/unread-count returns correct count",
+    "Verify notifications table has correct foreign keys and type/entity_type CHECK constraints"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

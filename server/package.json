@@ -1,0 +1,45 @@
+{
+  "name": "koottam_server",
+  "version": "1.0.0",
+  "description": "Koottam REST API — Node.js + Express",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "migrate": "node migrate.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.9.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.0.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.11.3",
+    "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "testMatch": [
+      "**/test/**/*.test.js"
+    ]
+  }
+}

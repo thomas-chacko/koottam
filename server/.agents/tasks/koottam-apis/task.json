@@ -1,0 +1,13 @@
+{
+  "task_id": "task-koottam-apis",
+  "task_description": "Create comprehensive REST APIs for the Koottam social media platform, including likes, comments, follow system, feeds, bookmarks, shares, notifications, stories, post views, and hashtags",
+  "status": "pending",
+  "feature_order": [
+    "FEAT-001",
+    "FEAT-002",
+    "FEAT-003",
+    "FEAT-004",
+    "FEAT-005"
+  ],
+  "blocked_reason": null
+}
