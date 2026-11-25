@@ -31,6 +31,9 @@ import { type Post } from "@/services/post.service";
 import Image from "next/image";
 import { EditProfileModal } from "./EditProfileModal";
 import { ProfileNotFound } from "./ProfileNotFound";
+import Link from "next/link";
+import { useFollowStatus, useFollowActions } from "@/hooks/useFollow";
+import { useTrendingHashtags } from "@/hooks/useHashtag";
 
 const getInitials = (name: string) =>
   name
@@ -63,6 +66,24 @@ export function UserProfile({ username }: { username?: string }) {
   const { uploadImage, uploading } = useCloudinaryUpload();
 
   const isOwnProfile = !username || authUser?.username === username;
+
+  // Follow state (only for other-user profiles)
+  const { isFollowing: remoteIsFollowing } = useFollowStatus(
+    !isOwnProfile ? (profile as any)?.id || undefined : undefined
+  );
+  const { follow: doFollow, unfollow: doUnfollow } = useFollowActions();
+  const [localIsFollowing, setLocalIsFollowing] = useState<boolean | null>(null);
+  const isFollowing = localIsFollowing !== null ? localIsFollowing : remoteIsFollowing;
+
+  const handleFollowClick = async () => {
+    if (!displayUser) return;
+    const prev = isFollowing;
+    setLocalIsFollowing(!prev);
+    const ok = prev
+      ? await doUnfollow((displayUser as any).id)
+      : await doFollow((displayUser as any).id);
+    if (!ok) setLocalIsFollowing(prev);
+  };
 
   // Fetch profile data from API
   const {
@@ -280,8 +301,15 @@ export function UserProfile({ username }: { username?: string }) {
                       Edit Profile
                     </button>
                   ) : (
-                    <button className="px-6 py-2 font-bold text-sm bg-white text-black hover:bg-[#ededed] rounded-full transition-colors cursor-pointer ml-1">
-                      Follow
+                    <button
+                      onClick={handleFollowClick}
+                      className={`px-6 py-2 font-bold text-sm rounded-full transition-colors cursor-pointer ml-1 ${
+                        isFollowing
+                          ? "bg-transparent border border-[#2a2a3e] text-white hover:border-red-400 hover:text-red-400"
+                          : "bg-white text-black hover:bg-[#ededed]"
+                      }`}
+                    >
+                      {isFollowing ? "Following" : "Follow"}
                     </button>
                   )}
                 </div>
@@ -333,18 +361,18 @@ export function UserProfile({ username }: { username?: string }) {
                 </div>
 
                 <div className="flex items-center gap-5 text-sm">
-                  <button className="hover:underline cursor-pointer group">
+                  <Link href={`/${displayUser.username}/following`} className="hover:underline cursor-pointer group">
                     <span className="font-bold text-white group-hover:text-white transition-colors">
                       {displayUser.following_count}
                     </span>{" "}
                     <span className="text-[#9ca3af]">Following</span>
-                  </button>
-                  <button className="hover:underline cursor-pointer group">
+                  </Link>
+                  <Link href={`/${displayUser.username}/followers`} className="hover:underline cursor-pointer group">
                     <span className="font-bold text-white group-hover:text-white transition-colors">
                       {displayUser.followers_count}
                     </span>{" "}
                     <span className="text-[#9ca3af]">Followers</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -392,38 +420,7 @@ export function UserProfile({ username }: { username?: string }) {
                 </button>
               </div>
 
-              <div className="space-y-2">
-                {[
-                  {
-                    category: "ARTS & CULTURE",
-                    tag: "#ModernArt2024",
-                    posts: "2.5K posts",
-                  },
-                  {
-                    category: "SOCIAL",
-                    tag: "#KoottamCommunity",
-                    posts: "12.2K posts",
-                  },
-                  {
-                    category: "TECHNOLOGY",
-                    tag: "#NextGenDesign",
-                    posts: "8.3K posts",
-                  },
-                ].map((trend, index) => (
-                  <button
-                    key={index}
-                    className="block w-full text-left hover:bg-[#2a2a3e] rounded-lg p-3 transition-colors cursor-pointer group"
-                  >
-                    <p className="text-[11px] text-[#6b7280] font-semibold tracking-wider mb-1 uppercase">
-                      {trend.category}
-                    </p>
-                    <p className="text-white font-semibold mb-1 group-hover:text-[#8B5CF6] transition-colors">
-                      {trend.tag}
-                    </p>
-                    <p className="text-xs text-[#9ca3af]">{trend.posts}</p>
-                  </button>
-                ))}
-              </div>
+              <TrendingSection />
             </section>
           </div>
         </aside>
