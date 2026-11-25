@@ -4,62 +4,15 @@ import { useState, useRef } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { PostCard } from '../Feed/PostCard';
-import { MoreHorizontal, Search, Settings } from 'lucide-react';
+import { MoreHorizontal, Search } from 'lucide-react';
 import { useLocalLenis } from '@/hooks/useLocalLenis';
-
-const MOCK_BOOKMARKS = [
-  {
-    id: '1',
-    author: {
-      name: 'Julian Rivera',
-      username: '@jrivera',
-      avatar: '/images/post-architecture.png',
-      verified: true,
-    },
-    content: 'Just finished the first draft of the new architectural concept for the Koottam hub. The focus is on fluid spaces and natural light integration. Can\'t wait to share more! 🏗️✨ #Architecture #Minimalism',
-    image: '/images/post-architecture.png',
-    timestamp: '2h ago',
-    likes: 124,
-    comments: 84,
-    shares: 12,
-    isLiked: false,
-  },
-  {
-    id: '2',
-    author: {
-      name: 'Elara Vance',
-      username: '@elara',
-      avatar: '/images/post-ceramic.png',
-    },
-    content: 'The morning light in the studio today was absolutely perfect for capturing these new ceramic pieces. There\'s something so therapeutic about the tactile nature of clay. 🌅🎨',
-    image: '/images/post-ceramic.png',
-    timestamp: '5h ago',
-    likes: 89,
-    comments: 12,
-    shares: 3,
-    isLiked: true,
-  },
-  {
-    id: '3',
-    author: {
-      name: 'Marcus Wright',
-      username: '@wright_tech',
-      avatar: '/images/koottam-logo.png',
-      verified: true,
-    },
-    content: 'Refactoring the entire state management flow today. Finding that sweet spot between overly complex stores and prop drilling is an absolute art form. What is your go-to approach these days?',
-    timestamp: '1d ago',
-    likes: 342,
-    comments: 56,
-    shares: 24,
-    isLiked: true,
-  }
-];
+import { useMyBookmarks } from '@/hooks/useBookmark';
 
 export function BookmarksFeed() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const mainFeedRef = useRef<HTMLElement>(null);
   const rightSidebarRef = useRef<HTMLElement>(null);
+  const { bookmarks, removeBookmark } = useMyBookmarks();
 
   useLocalLenis(mainFeedRef);
   useLocalLenis(rightSidebarRef);
@@ -114,14 +67,14 @@ export function BookmarksFeed() {
             {/* Feed List */}
             <div className="py-2 sm:px-4 mt-2">
               <div className="space-y-0">
-                {MOCK_BOOKMARKS.map((post) => (
-                  <PostCard key={post.id} post={post} />
+                {bookmarks.map((post) => (
+                  <PostCard key={post.id} post={post} onRemoveBookmark={removeBookmark} />
                 ))}
               </div>
             </div>
             
             {/* Empty State / End of list */}
-            {MOCK_BOOKMARKS.length === 0 && (
+            {bookmarks.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
                 <div className="text-[#9ca3af] mb-4">
                   <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">

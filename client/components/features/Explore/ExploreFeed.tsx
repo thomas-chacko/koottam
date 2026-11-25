@@ -7,6 +7,7 @@ import { PostCard } from '../Feed/PostCard';
 import { TrendingUp, Settings, MoreHorizontal } from 'lucide-react';
 import { useLocalLenis } from '@/hooks/useLocalLenis';
 import Image from 'next/image';
+import { useExploreFeed } from '@/hooks/useFeed';
 
 const mockTrending = [
   { rank: 1, category: 'TECHNOLOGY · TRENDING', title: '#NextGenDesign', posts: '12.5K posts' },
@@ -16,39 +17,7 @@ const mockTrending = [
   { rank: 5, category: 'ARTS & CULTURE', title: 'Digital Art', posts: '2,845 posts' },
 ];
 
-const mockPosts = [
-  {
-    id: 'e1',
-    author: {
-      name: 'Elara Vance',
-      username: '@elara',
-      avatar: '/images/avatar-2.jpg',
-      verified: false,
-    },
-    content: 'The morning light in the studio today was absolutely perfect for capturing these new ceramic pieces. There\'s something so therapeutic about the tactile nature of clay. 🌅🎨',
-    image: '/images/post-ceramic.png', // Assuming user has this mock from our earlier data
-    timestamp: '5h ago',
-    likes: 89,
-    comments: 12,
-    shares: 3,
-    isLiked: true,
-  },
-  {
-    id: 'e2',
-    author: {
-       name: 'Julian Rivera',
-       username: '@jrivera',
-       avatar: '/images/avatar-1.jpg',
-       verified: true,
-    },
-    content: 'Fascinating developments in AI-assisted spatial computing. The implications for collaborative architecture are massive.',
-    timestamp: '1d ago',
-    likes: 541,
-    comments: 89,
-    shares: 42,
-    isLiked: false,
-  }
-];
+const mockPosts: never[] = [];
 
 const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 const isPrimaryAvatar = (name: string) => name.length % 2 === 0;
@@ -58,6 +27,7 @@ export function ExploreFeed() {
   const [activeTab, setActiveTab] = useState('For you');
   const mainFeedRef = useRef<HTMLElement>(null);
   const rightSidebarRef = useRef<HTMLElement>(null);
+  const { posts } = useExploreFeed();
 
   useLocalLenis(mainFeedRef);
   useLocalLenis(rightSidebarRef);
@@ -153,7 +123,7 @@ export function ExploreFeed() {
             <div className="pt-2 sm:px-4">
               <h3 className="px-4 sm:px-0 py-3 text-xl font-bold text-white">Discover</h3>
               <div className="space-y-0">
-                {mockPosts.map((post) => (
+                {posts.map((post) => (
                   <PostCard key={post.id} post={post} />
                 ))}
               </div>

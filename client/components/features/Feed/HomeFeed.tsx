@@ -5,65 +5,63 @@ import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { CreatePost } from './CreatePost';
 import { PostCard } from './PostCard';
-import { TrendingUp, Settings, Plus } from 'lucide-react';
+import { CommentDrawer } from './CommentDrawer';
+import { TrendingUp, Settings, Plus, Loader2, BookOpen } from 'lucide-react';
 import { useLocalLenis } from '@/hooks/useLocalLenis';
 import { useAuthStore } from '@/store/useAuthStore';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useHomeFeed } from '@/hooks/useFeed';
+import { useFollowingStories } from '@/hooks/useStories';
+import { useTrendingHashtags } from '@/hooks/useHashtag';
+import { useFollowSuggestions, useFollowActions } from '@/hooks/useFollow';
+import { feedService } from '@/services/feed.service';
 
-// Mock data - will be replaced with API calls
-const mockStories = [
-  { id: '2', name: 'Lila Rose', avatar: '/images/avatar-1.jpg', isOwn: false },
-  { id: '3', name: 'Zayn', avatar: '/images/avatar-2.jpg', isOwn: false },
-  { id: '4', name: 'Mia Wong', avatar: '/images/avatar-3.jpg', isOwn: false },
-  { id: '5', name: 'Daniel K.', avatar: '/images/avatar-4.jpg', isOwn: false },
-  { id: '6', name: 'Sarah', avatar: '/images/avatar-5.jpg', isOwn: false },
-];
-
-const mockPosts = [
-  {
-    id: '1',
-    author: {
-      name: 'Julian Rivera',
-      username: '@jrivera',
-      avatar: '/images/avatar-1.jpg',
-      verified: true,
-    },
-    content: 'Just finished the first draft of the new architectural concept for the Koottam hub. The focus is on fluid spaces and natural light integration. Can\'t wait to share more! 🏗️✨ #Architecture #Minimalism',
-    image: '/images/post-architecture.png',
-    timestamp: '2h ago',
-    likes: 124,
-    comments: 84,
-    shares: 12,
-    isLiked: false,
-  },
-  {
-    id: '2',
-    author: {
-      name: 'Elara Vance',
-      username: '@elara',
-      avatar: '/images/avatar-2.jpg',
-    },
-    content: 'The morning light in the studio today was absolutely perfect for capturing these new ceramic pieces. There\'s something so therapeutic about the tactile nature of clay. 🌅🎨',
-    image: '/images/post-ceramic.png',
-    timestamp: '5h ago',
-    likes: 89,
-    comments: 12,
-    shares: 3,
-    isLiked: true,
-  },
-];
-
-const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-const isPrimaryAvatar = (name: string) => name.length % 2 === 0;
+const getInitials = (name: string) =>
+  name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase();
 
 export function HomeFeed() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [commentDrawerPostId, setCommentDrawerPostId] = useState<string | null>(null);
+  const [offset, setOffset] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hiddenSuggestions, setHiddenSuggestions] = useState<string[]>([]);
+
   const mainFeedRef = useRef<HTMLElement>(null);
   const rightSidebarRef = useRef<HTMLElement>(null);
   const { user } = useAuthStore();
 
   useLocalLenis(mainFeedRef);
   useLocalLenis(rightSidebarRef);
+
+  const { posts, loading, setPosts } = useHomeFeed();
+  const { storyGroups } = useFollowingStories();
+  const { hashtags } = useTrendingHashtags();
+  const { suggestions } = useFollowSuggestions();
+  const { follow } = useFollowActions();
+
+  const handleFollow = async (userId: string) => {
+    const ok = await follow(userId);
+    if (ok) {
+      setHiddenSuggestions((prev) => [...prev, userId]);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    setLoadingMore(true);
+    const newOffset = offset + 20;
+    try {
+      const data = await feedService.getHomeFeed({ limit: 20, offset: newOffset });
+      setPosts((prev) => [...prev, ...data.posts]);
+      setOffset(newOffset);
+    } catch {
+      // silently ignore
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const visibleSuggestions = suggestions.filter((s) => !hiddenSuggestions.includes(s.id));
 
   return (
     <div className="h-screen overflow-hidden bg-[#0a0a0f] text-white">
@@ -81,12 +79,15 @@ export function HomeFeed() {
         </div>
 
         {/* Main Feed */}
-        <main ref={mainFeedRef} className="flex-1 w-full max-w-[650px] mx-auto overflow-y-auto relative scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <main
+          ref={mainFeedRef}
+          className="flex-1 w-full max-w-[650px] mx-auto overflow-y-auto relative scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
           <div className="w-full min-h-full">
             {/* Stories */}
             <div className="py-2">
               <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pt-4 pb-4 px-2">
-                {/* My Story - Always First */}
+                {/* My Story */}
                 {user && (
                   <button className="flex flex-col items-center gap-2 shrink-0 cursor-pointer group transition-all">
                     <div className="relative">
@@ -117,25 +118,37 @@ export function HomeFeed() {
                   </button>
                 )}
 
-                {/* Other Stories */}
-                {mockStories.map((story) => {
-                  const isPrimary = isPrimaryAvatar(story.name);
-                  const bgClass = isPrimary ? 'bg-[#8B5CF6] text-white' : 'bg-[#1a1a2e] text-[#ededed]';
-
+                {/* Following stories */}
+                {storyGroups.map((group) => {
+                  const name = group.user.full_name || group.user.username;
                   return (
                     <button
-                      key={story.id}
+                      key={group.user.id}
                       className="flex flex-col items-center gap-2 shrink-0 cursor-pointer group transition-all"
                     >
                       <div className="relative">
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl select-none relative z-10 transition-transform group-hover:scale-105 border-2 border-transparent ring-2 ring-offset-2 ring-offset-[#0a0a0f] ${isPrimary ? 'ring-[#8B5CF6]' : 'ring-[#2a2a3e]'}`}>
-                          <div className={`w-full h-full rounded-full flex items-center justify-center ${bgClass}`}>
-                            {getInitials(story.name)}
+                        <div
+                          className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl select-none relative z-10 transition-transform group-hover:scale-105 border-2 border-transparent ring-2 ring-offset-2 ring-offset-[#0a0a0f] ${
+                            group.has_unseen ? 'ring-[#8B5CF6]' : 'ring-[#2a2a3e]'
+                          }`}
+                        >
+                          <div className="w-full h-full rounded-full bg-[#1a1a2e] flex items-center justify-center overflow-hidden">
+                            {group.user.avatar_url ? (
+                              <Image
+                                src={group.user.avatar_url}
+                                alt={name}
+                                width={64}
+                                height={64}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-[#ededed]">{getInitials(name)}</span>
+                            )}
                           </div>
                         </div>
                       </div>
                       <span className="text-xs font-medium text-[#9ca3af] group-hover:text-white transition-colors max-w-[64px] truncate">
-                        {story.name}
+                        {name}
                       </span>
                     </button>
                   );
@@ -147,17 +160,49 @@ export function HomeFeed() {
             <div className="py-2 pb-12">
               <CreatePost />
 
-              <div className="space-y-0">
-                {mockPosts.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
-              </div>
+              {loading ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="w-8 h-8 animate-spin text-[#8B5CF6]" />
+                </div>
+              ) : posts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <BookOpen className="w-12 h-12 text-[#2a2a3e] mb-4" />
+                  <p className="text-white font-semibold text-lg">No posts yet</p>
+                  <p className="text-[#9ca3af] text-sm mt-1">Follow people to see their posts here</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-0">
+                    {posts.map((post) => (
+                      <PostCard
+                        key={post.id}
+                        post={post}
+                        onCommentClick={(id) => setCommentDrawerPostId(id)}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex justify-center mt-4">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="px-6 py-2.5 bg-[#1a1a2e] border border-[#2a2a3e] text-[#9ca3af] text-sm font-medium rounded-full hover:border-[#8B5CF6] hover:text-white transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                      Load more
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </main>
 
         {/* Right Sidebar */}
-        <aside ref={rightSidebarRef} className="hidden xl:block w-[350px] overflow-y-auto shrink-0 flex-none h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pl-4">
+        <aside
+          ref={rightSidebarRef}
+          className="hidden xl:block w-[350px] overflow-y-auto shrink-0 flex-none h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pl-4"
+        >
           <div className="py-6 space-y-6">
             {/* Trending Section */}
             <section className="bg-[#1a1a2e] border border-[#2a2a3e] rounded-xl p-5 shadow-sm">
@@ -172,22 +217,38 @@ export function HomeFeed() {
               </div>
 
               <div className="space-y-2">
-                {[
-                  { category: 'ARTS & CULTURE', tag: '#ModernArt2024', posts: '2.5K posts' },
-                  { category: 'SOCIAL', tag: '#KoottamCommunity', posts: '12.2K posts' },
-                  { category: 'TECHNOLOGY', tag: '#NextGenDesign', posts: '8.3K posts' },
-                  { category: 'DEVELOPMENT', tag: '#CreativeCoding', posts: '5.4K posts' },
-                  { category: 'LIFESTYLE', tag: '#PastelAesthetics', posts: '3.2K posts' },
-                ].map((trend, index) => (
-                  <button
-                    key={index}
-                    className="block w-full text-left hover:bg-[#2a2a3e] rounded-lg p-3 transition-colors cursor-pointer group"
-                  >
-                    <p className="text-[11px] text-[#6b7280] font-semibold tracking-wider mb-1 uppercase">{trend.category}</p>
-                    <p className="text-white font-semibold mb-1 group-hover:text-[#8B5CF6] transition-colors">{trend.tag}</p>
-                    <p className="text-xs text-[#9ca3af]">{trend.posts}</p>
-                  </button>
-                ))}
+                {hashtags.length > 0 ? (
+                  hashtags.map((tag) => (
+                    <Link
+                      key={tag.name}
+                      href={'/hashtag/' + tag.name}
+                      className="block w-full text-left hover:bg-[#2a2a3e] rounded-lg p-3 transition-colors cursor-pointer group"
+                    >
+                      <p className="text-white font-semibold mb-1 group-hover:text-[#8B5CF6] transition-colors">
+                        #{tag.name}
+                      </p>
+                      <p className="text-xs text-[#9ca3af]">
+                        {tag.post_count.toLocaleString()} posts
+                      </p>
+                    </Link>
+                  ))
+                ) : (
+                  [
+                    { tag: '#ModernArt2024', posts: '2.5K posts' },
+                    { tag: '#KoottamCommunity', posts: '12.2K posts' },
+                    { tag: '#NextGenDesign', posts: '8.3K posts' },
+                    { tag: '#CreativeCoding', posts: '5.4K posts' },
+                    { tag: '#PastelAesthetics', posts: '3.2K posts' },
+                  ].map((trend, index) => (
+                    <div
+                      key={index}
+                      className="block w-full text-left hover:bg-[#2a2a3e] rounded-lg p-3 transition-colors cursor-pointer group"
+                    >
+                      <p className="text-white font-semibold mb-1 group-hover:text-[#8B5CF6] transition-colors">{trend.tag}</p>
+                      <p className="text-xs text-[#9ca3af]">{trend.posts}</p>
+                    </div>
+                  ))
+                )}
 
                 <button className="w-full text-left p-3 text-[#8B5CF6] text-sm font-semibold hover:bg-[#2a2a3e] rounded-lg transition-colors cursor-pointer mt-2">
                   Show more trends
@@ -200,33 +261,67 @@ export function HomeFeed() {
               <h2 className="text-lg font-bold text-white mb-5">Who to follow</h2>
 
               <div className="space-y-4">
-                {[
-                  { name: 'Elena Gilbert', username: '@elenag', avatar: '/images/avatar-6.jpg' },
-                  { name: 'Marcus Wright', username: '@wright_tech', avatar: '/images/avatar-7.jpg' },
-                  { name: 'Sophia Chen', username: '@sophiachen', avatar: '/images/avatar-8.jpg' },
-                ].map((user) => {
-                  const isPrimary = isPrimaryAvatar(user.name);
-                  const bgClass = isPrimary ? 'bg-[#8B5CF6] text-white' : 'bg-[#2a2a3e] text-[#ededed]';
-                  return (
+                {visibleSuggestions.length > 0 ? (
+                  visibleSuggestions.slice(0, 5).map((suggestion) => {
+                    const name = suggestion.full_name || suggestion.username;
+                    return (
+                      <div
+                        key={suggestion.id}
+                        className="flex items-center justify-between group cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-[#2a2a3e] text-[#ededed] flex items-center justify-center font-bold text-sm select-none overflow-hidden">
+                            {suggestion.avatar_url ? (
+                              <Image
+                                src={suggestion.avatar_url}
+                                alt={name}
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              getInitials(name)
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-white font-semibold text-sm group-hover:underline">{name}</p>
+                            <p className="text-[#9ca3af] text-xs">@{suggestion.username}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleFollow(suggestion.id)}
+                          className="px-4 py-1.5 bg-[#2a2a3e] text-white text-sm font-medium rounded-full hover:bg-[#8B5CF6] transition-colors cursor-pointer"
+                        >
+                          Follow
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  [
+                    { name: 'Elena Gilbert', username: '@elenag' },
+                    { name: 'Marcus Wright', username: '@wright_tech' },
+                    { name: 'Sophia Chen', username: '@sophiachen' },
+                  ].map((u) => (
                     <div
-                      key={user.username}
+                      key={u.username}
                       className="flex items-center justify-between group cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm select-none ${bgClass}`}>
-                          {getInitials(user.name)}
+                        <div className="w-10 h-10 rounded-full bg-[#2a2a3e] text-[#ededed] flex items-center justify-center font-bold text-sm select-none">
+                          {getInitials(u.name)}
                         </div>
                         <div>
-                          <p className="text-white font-semibold text-sm group-hover:underline">{user.name}</p>
-                          <p className="text-[#9ca3af] text-xs">{user.username}</p>
+                          <p className="text-white font-semibold text-sm group-hover:underline">{u.name}</p>
+                          <p className="text-[#9ca3af] text-xs">{u.username}</p>
                         </div>
                       </div>
                       <button className="px-4 py-1.5 bg-[#2a2a3e] text-white text-sm font-medium rounded-full hover:bg-[#8B5CF6] transition-colors cursor-pointer">
                         Follow
                       </button>
                     </div>
-                  );
-                })}
+                  ))
+                )}
 
                 <button className="w-full text-left p-3 mt-2 text-[#8B5CF6] text-sm font-semibold hover:bg-[#2a2a3e] rounded-lg transition-colors cursor-pointer">
                   Show more suggestions
@@ -249,6 +344,14 @@ export function HomeFeed() {
           </div>
         </aside>
       </div>
+
+      {/* Comment Drawer */}
+      {commentDrawerPostId && (
+        <CommentDrawer
+          postId={commentDrawerPostId}
+          onClose={() => setCommentDrawerPostId(null)}
+        />
+      )}
     </div>
   );
 }
