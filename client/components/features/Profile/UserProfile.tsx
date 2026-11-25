@@ -234,7 +234,7 @@ export function UserProfile({ username }: { username?: string }) {
                   </h1>
                 </div>
                 <p className="text-xs text-[#9ca3af] font-medium tracking-wide">
-                  {postsLoading ? "..." : posts.length} posts
+                  <span className='font-bold text-white'>{displayUser.posts_count ?? 0}</span> <span className='text-[#9ca3af] text-sm'>Posts</span>
                 </p>
               </div>
             </div>
@@ -340,7 +340,7 @@ export function UserProfile({ username }: { username?: string }) {
                           : "bg-white text-black hover:bg-[#ededed]"
                       }`}
                     >
-                      {isFollowing ? "Following" : "Follow"}
+                      {isFollowing ? "Unfollow" : "Follow"}
                     </button>
                   )}
                 </div>
@@ -392,13 +392,13 @@ export function UserProfile({ username }: { username?: string }) {
                 </div>
 
                 <div className="flex items-center gap-5 text-sm">
-                  <Link href={`/${displayUser.username}/following`} className="hover:underline cursor-pointer group">
+                  <Link href={`/${displayUser.username}/followers?tab=following`} className="hover:underline cursor-pointer group">
                     <span className="font-bold text-white group-hover:text-white transition-colors">
                       {displayUser.following_count}
                     </span>{" "}
                     <span className="text-[#9ca3af]">Following</span>
                   </Link>
-                  <Link href={`/${displayUser.username}/followers`} className="hover:underline cursor-pointer group">
+                  <Link href={`/${displayUser.username}/followers?tab=followers`} className="hover:underline cursor-pointer group">
                     <span className="font-bold text-white group-hover:text-white transition-colors">
                       {displayUser.followers_count}
                     </span>{" "}

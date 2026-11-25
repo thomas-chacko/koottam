@@ -218,6 +218,8 @@ function ActiveChatPanel({
   const { conversations } = useConversations();
   const [inputText, setInputText] = useState('');
   const [typingUserId, setTypingUserId] = useState<string | null>(null);
+  const [deletedMsgIds, setDeletedMsgIds] = useState<Set<string>>(new Set());
+  const [contextMenuState, setContextMenuState] = useState<{ msgId: string; x: number; y: number } | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -250,6 +252,14 @@ function ActiveChatPanel({
     };
   }, [activeChatId, authUser?.id]);
 
+  // Close context menu on outside click
+  useEffect(() => {
+    if (!contextMenuState) return;
+    const handleClick = () => setContextMenuState(null);
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [contextMenuState]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -271,6 +281,29 @@ function ActiveChatPanel({
       handleSend();
     }
   };
+
+  const handleContextMenu = (e: React.MouseEvent, msgId: string) => {
+    e.preventDefault();
+    setContextMenuState({ msgId, x: e.clientX, y: e.clientY });
+  };
+
+  const handleDeleteMessage = async () => {
+    if (!contextMenuState) return;
+    const { msgId } = contextMenuState;
+    setContextMenuState(null);
+    setDeletedMsgIds((prev) => new Set(prev).add(msgId));
+    try {
+      await messageService.deleteMessage(msgId);
+    } catch {
+      setDeletedMsgIds((prev) => {
+        const next = new Set(prev);
+        next.delete(msgId);
+        return next;
+      });
+    }
+  };
+
+  const visibleMessages = messages.filter((m) => !deletedMsgIds.has(m.id));
 
   return (
     <div className="flex flex-col h-full absolute inset-0">
@@ -333,11 +366,12 @@ function ActiveChatPanel({
           </div>
         )}
 
-        {messages.map((msg) => {
+        {visibleMessages.map((msg) => {
           const isMe = msg.sender_id === authUser?.id;
           return (
             <div key={msg.id} className={`flex flex-col w-full ${isMe ? 'items-end' : 'items-start'}`}>
               <div
+                onContextMenu={isMe ? (e) => handleContextMenu(e, msg.id) : undefined}
                 className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-[15px] ${
                   isMe
                     ? 'bg-[#8B5CF6] text-white rounded-tr-sm'
@@ -385,6 +419,22 @@ function ActiveChatPanel({
           </button>
         </div>
       </div>
+
+      {/* Context menu */}
+      {contextMenuState && (
+        <div
+          className="fixed bg-[#1a1a2e] border border-[#2a2a3e] rounded-lg shadow-xl z-[300] py-1"
+          style={{ top: contextMenuState.y, left: contextMenuState.x }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={handleDeleteMessage}
+            className="text-red-400 hover:bg-[#2a2a3e] px-4 py-2 text-sm w-full text-left"
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 }

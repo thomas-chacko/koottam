@@ -5,6 +5,7 @@ import { Search, Bell, Menu, BadgeCheck } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import { useNotifications } from "@/hooks/useNotifications";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -16,6 +17,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
   const router = useRouter();
+  const { unreadCount } = useNotifications();
 
   // Search States
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,7 +113,11 @@ export function Header({ onMenuClick }: HeaderProps) {
                 aria-label="Notifications"
               >
                 <Bell className="w-5 h-5 md:w-6 md:h-6" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full" />
+                {unreadCount > 0 ? (
+                  <span className='absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-[#8B5CF6] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1'>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                ) : (
+                  <span className='absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full' />
+                )}
               </Link>
               <Link
                 href="/profile"
@@ -148,7 +154,11 @@ export function Header({ onMenuClick }: HeaderProps) {
                 className="p-2 text-[#ededed] hover:text-white transition-colors cursor-pointer relative"
               >
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full" />
+                {unreadCount > 0 ? (
+                  <span className='absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-[#8B5CF6] rounded-full text-white text-[10px] font-bold flex items-center justify-center px-1'>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                ) : (
+                  <span className='absolute top-1 right-1 w-2 h-2 bg-[#8B5CF6] rounded-full' />
+                )}
               </Link>
               <Link
                 href="/profile"
