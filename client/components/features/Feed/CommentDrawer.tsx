@@ -116,7 +116,7 @@ function CommentItem({ comment }: CommentItemProps) {
               onKeyDown={async (e) => {
                 if (e.key === 'Enter' && replyText.trim()) {
                   try {
-                    const r = await commentService.createComment('', replyText.trim(), comment.id);
+                    const r = await commentService.createComment(comment.post_id, replyText.trim(), comment.id);
                     setReplies((prev) => [...prev, r]);
                     setRepliesLoaded(true);
                     setReplyText('');

@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { Notification, notificationService } from "@/services/notification.service";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const fetchAll = useCallback(async () => {
+    if (!isAuthenticated) return;
     try {
       setLoading(true);
       setError(null);
@@ -22,7 +25,7 @@ export const useNotifications = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     fetchAll();
