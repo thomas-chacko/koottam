@@ -41,7 +41,7 @@ export const messageService = {
     const response = await api.get<ApiResponse<{ conversations: Conversation[] }>>(
       "/message/conversations"
     );
-    return response.data.data.conversations;
+    return response.data.data.conversations ?? [];
   },
 
   createConversation: async (

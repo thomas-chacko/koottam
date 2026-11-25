@@ -12,7 +12,7 @@ export const useHomeFeed = () => {
       setLoading(true);
       setError(null);
       const data = await feedService.getHomeFeed();
-      setPosts(data.posts);
+      setPosts(data.posts ?? []);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to load feed");
     } finally {
@@ -37,7 +37,7 @@ export const useExploreFeed = () => {
       setLoading(true);
       setError(null);
       const data = await feedService.getExploreFeed();
-      setPosts(data.posts);
+      setPosts(data.posts ?? []);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to load explore feed");
     } finally {

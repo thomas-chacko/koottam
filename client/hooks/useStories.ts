@@ -11,7 +11,7 @@ export const useFollowingStories = () => {
       setLoading(true);
       setError(null);
       const groups = await storyService.getFollowingStories();
-      setStoryGroups(groups);
+      setStoryGroups(groups ?? []);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to load stories");
     } finally {

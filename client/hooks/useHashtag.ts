@@ -13,7 +13,7 @@ export const useTrendingHashtags = () => {
         setLoading(true);
         setError(null);
         const data = await hashtagService.getTrending();
-        setHashtags(data);
+        setHashtags(data ?? []);
       } catch (err: any) {
         setError(err.response?.data?.message || "Failed to load trending hashtags");
       } finally {
@@ -37,7 +37,7 @@ export const useHashtagPosts = (name: string) => {
       setLoading(true);
       setError(null);
       const data = await hashtagService.getHashtagPosts(name);
-      setPosts(data.posts);
+      setPosts(data.posts ?? []);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to load hashtag posts");
     } finally {

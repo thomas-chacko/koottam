@@ -16,7 +16,7 @@ export const useConversations = () => {
       setLoading(true);
       setError(null);
       const data = await messageService.getConversations();
-      setConversations(data);
+      setConversations(data ?? []);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to load conversations");
     } finally {

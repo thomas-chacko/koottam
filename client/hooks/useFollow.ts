@@ -73,7 +73,7 @@ export const useFollowSuggestions = () => {
       setLoading(true);
       setError(null);
       const data = await followService.getSuggestions();
-      setSuggestions(data);
+      setSuggestions(data ?? []);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to load suggestions");
     } finally {

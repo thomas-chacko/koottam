@@ -18,7 +18,7 @@ export const hashtagService = {
     const response = await api.get<ApiResponse<{ hashtags: Hashtag[] }>>(
       "/hashtag/trending"
     );
-    return response.data.data.hashtags;
+    return response.data.data.hashtags ?? [];
   },
 
   getHashtagPosts: async (

@@ -49,10 +49,23 @@ export const storyService = {
   },
 
   getFollowingStories: async (): Promise<StoryGroup[]> => {
-    const response = await api.get<ApiResponse<{ groups: StoryGroup[] }>>(
+    const response = await api.get<ApiResponse<{ stories: any[] }>>(
       "/story/following"
     );
-    return response.data.data.groups;
+    // Server returns flat stories array, group by user
+    const stories = response.data.data.stories ?? [];
+    const groupMap = new Map<string, StoryGroup>();
+    for (const s of stories) {
+      if (!groupMap.has(s.user_id)) {
+        groupMap.set(s.user_id, {
+          user: { id: s.user_id, username: s.username, full_name: s.full_name, avatar_url: s.avatar_url },
+          stories: [],
+          has_unseen: false,
+        });
+      }
+      groupMap.get(s.user_id)!.stories.push(s);
+    }
+    return Array.from(groupMap.values());
   },
 
   getUserStories: async (userId: string): Promise<Story[]> => {
