@@ -9,6 +9,9 @@ import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
+// ─── Trust Proxy (required for Render, Vercel, and other reverse proxies)
+app.set('trust proxy', 1);
+
 // ─── Security & Middleware
 app.use(helmet());
 app.use(cors({ origin: CORS_ORIGIN, credentials: true }));
