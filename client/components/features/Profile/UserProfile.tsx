@@ -43,6 +43,40 @@ const getInitials = (name: string) =>
     .substring(0, 2)
     .toUpperCase();
 
+// ── Trending sidebar section ──────────────────────────────────────────────────
+
+function TrendingSection() {
+  const { hashtags, loading } = useTrendingHashtags();
+  if (loading) {
+    return (
+      <div className="flex justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-[#8B5CF6]" />
+      </div>
+    );
+  }
+  if (hashtags.length === 0) {
+    return <p className="text-[#6b7280] text-sm text-center py-4">No trending topics</p>;
+  }
+  return (
+    <div className="space-y-2">
+      {hashtags.map((tag) => (
+        <button
+          key={tag.name}
+          className="block w-full text-left hover:bg-[#2a2a3e] rounded-lg p-3 transition-colors cursor-pointer group"
+        >
+          <p className="text-[11px] text-[#6b7280] font-semibold tracking-wider mb-1 uppercase">
+            TRENDING
+          </p>
+          <p className="text-white font-semibold mb-1 group-hover:text-[#8B5CF6] transition-colors">
+            #{tag.name}
+          </p>
+          <p className="text-xs text-[#9ca3af]">{tag.post_count.toLocaleString()} posts</p>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 const formatWebsiteUrl = (url: string) => {
   if (!url) return "";
   // If URL doesn't start with http:// or https://, add https://
@@ -67,24 +101,6 @@ export function UserProfile({ username }: { username?: string }) {
 
   const isOwnProfile = !username || authUser?.username === username;
 
-  // Follow state (only for other-user profiles)
-  const { isFollowing: remoteIsFollowing } = useFollowStatus(
-    !isOwnProfile ? (profile as any)?.id || undefined : undefined
-  );
-  const { follow: doFollow, unfollow: doUnfollow } = useFollowActions();
-  const [localIsFollowing, setLocalIsFollowing] = useState<boolean | null>(null);
-  const isFollowing = localIsFollowing !== null ? localIsFollowing : remoteIsFollowing;
-
-  const handleFollowClick = async () => {
-    if (!displayUser) return;
-    const prev = isFollowing;
-    setLocalIsFollowing(!prev);
-    const ok = prev
-      ? await doUnfollow((displayUser as any).id)
-      : await doFollow((displayUser as any).id);
-    if (!ok) setLocalIsFollowing(prev);
-  };
-
   // Fetch profile data from API
   const {
     profile: publicProfile,
@@ -100,6 +116,21 @@ export function UserProfile({ username }: { username?: string }) {
   const profile = isOwnProfile ? privateProfile : publicProfile;
   const profileLoading = isOwnProfile ? privateLoading : publicLoading;
   const refetch = isOwnProfile ? privateRefetch : publicRefetch;
+
+  // Follow state (only for other-user profiles)
+  const profileId = !isOwnProfile ? profile?.id : undefined;
+  const { isFollowing: remoteIsFollowing } = useFollowStatus(profileId);
+  const { follow: doFollow, unfollow: doUnfollow } = useFollowActions();
+  const [localIsFollowing, setLocalIsFollowing] = useState<boolean | null>(null);
+  const isFollowing = localIsFollowing !== null ? localIsFollowing : remoteIsFollowing;
+
+  const handleFollowClick = async () => {
+    if (!profile?.id) return;
+    const prev = isFollowing;
+    setLocalIsFollowing(!prev);
+    const ok = prev ? await doUnfollow(profile.id) : await doFollow(profile.id);
+    if (!ok) setLocalIsFollowing(prev);
+  };
 
   // Fetch this user's posts (keyed on username, runs once profile is resolved)
   const profileUsername =
