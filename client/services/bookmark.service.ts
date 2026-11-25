@@ -13,18 +13,18 @@ export interface BookmarkStatus {
 
 export const bookmarkService = {
   bookmark: async (postId: string): Promise<void> => {
-    await api.post(`/${postId}`);
+    await api.post(`/bookmark/${postId}`);
   },
 
   removeBookmark: async (postId: string): Promise<void> => {
-    await api.delete(`/${postId}`);
+    await api.delete(`/bookmark/${postId}`);
   },
 
   getMyBookmarks: async (
     params?: Record<string, unknown>
   ): Promise<{ posts: Post[] }> => {
     const response = await api.get<ApiResponse<{ posts: Post[] }>>(
-      "/my-bookmarks",
+      "/bookmark/my-bookmarks",
       { params }
     );
     return response.data.data;
@@ -32,7 +32,7 @@ export const bookmarkService = {
 
   getStatus: async (postId: string): Promise<BookmarkStatus> => {
     const response = await api.get<ApiResponse<BookmarkStatus>>(
-      `/status/${postId}`
+      `/bookmark/status/${postId}`
     );
     return response.data.data;
   },

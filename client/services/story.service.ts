@@ -63,10 +63,10 @@ export const storyService = {
   },
 
   viewStory: async (id: string): Promise<void> => {
-    await api.post(`/${id}/view`);
+    await api.post(`/story/${id}/view`);
   },
 
   deleteStory: async (id: string): Promise<void> => {
-    await api.delete(`/${id}`);
+    await api.delete(`/story/${id}`);
   },
 };

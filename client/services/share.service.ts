@@ -8,16 +8,16 @@ interface ApiResponse<T> {
 
 export const shareService = {
   sharePost: async (postId: string): Promise<void> => {
-    await api.post(`/${postId}`);
+    await api.post(`/share/${postId}`);
   },
 
   unsharePost: async (postId: string): Promise<void> => {
-    await api.delete(`/${postId}`);
+    await api.delete(`/share/${postId}`);
   },
 
   getSharers: async (postId: string): Promise<{ users: unknown[] }> => {
     const response = await api.get<ApiResponse<{ users: unknown[] }>>(
-      `/${postId}/sharers`
+      `/share/${postId}/sharers`
     );
     return response.data.data;
   },

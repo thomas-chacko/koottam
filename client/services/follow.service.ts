@@ -15,11 +15,11 @@ export interface FollowStatus {
 
 export const followService = {
   follow: async (userId: string): Promise<void> => {
-    await api.post(`/${userId}`);
+    await api.post(`/follow/${userId}`);
   },
 
   unfollow: async (userId: string): Promise<void> => {
-    await api.delete(`/${userId}`);
+    await api.delete(`/follow/${userId}`);
   },
 
   getFollowers: async (
@@ -28,7 +28,7 @@ export const followService = {
   ): Promise<{ users: UserProfile[]; total: number }> => {
     const response = await api.get<
       ApiResponse<{ users: UserProfile[]; total: number }>
-    >(`/${userId}/followers`, { params });
+    >(`/follow/${userId}/followers`, { params });
     return response.data.data;
   },
 
@@ -38,20 +38,20 @@ export const followService = {
   ): Promise<{ users: UserProfile[]; total: number }> => {
     const response = await api.get<
       ApiResponse<{ users: UserProfile[]; total: number }>
-    >(`/${userId}/following`, { params });
+    >(`/follow/${userId}/following`, { params });
     return response.data.data;
   },
 
   getStatus: async (userId: string): Promise<FollowStatus> => {
     const response = await api.get<ApiResponse<FollowStatus>>(
-      `/status/${userId}`
+      `/follow/status/${userId}`
     );
     return response.data.data;
   },
 
   getSuggestions: async (): Promise<UserProfile[]> => {
     const response = await api.get<ApiResponse<{ users: UserProfile[] }>>(
-      `/suggestions`
+      `/follow/suggestions`
     );
     return response.data.data.users;
   },

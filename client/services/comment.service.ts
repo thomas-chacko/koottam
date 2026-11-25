@@ -33,7 +33,7 @@ export const commentService = {
     const body: { content: string; parent_id?: string } = { content };
     if (parentId) body.parent_id = parentId;
     const response = await api.post<ApiResponse<{ comment: Comment }>>(
-      `/${postId}`,
+      `/comment/${postId}`,
       body
     );
     return response.data.data.comment;
@@ -45,26 +45,26 @@ export const commentService = {
   ): Promise<{ comments: Comment[]; total: number }> => {
     const response = await api.get<
       ApiResponse<{ comments: Comment[]; total: number }>
-    >(`/post/${postId}`, { params });
+    >(`/comment/post/${postId}`, { params });
     return response.data.data;
   },
 
   getReplies: async (commentId: string): Promise<Comment[]> => {
     const response = await api.get<ApiResponse<{ comments: Comment[] }>>(
-      `/${commentId}/replies`
+      `/comment/${commentId}/replies`
     );
     return response.data.data.comments;
   },
 
   updateComment: async (id: string, content: string): Promise<Comment> => {
     const response = await api.put<ApiResponse<{ comment: Comment }>>(
-      `/${id}`,
+      `/comment/${id}`,
       { content }
     );
     return response.data.data.comment;
   },
 
   deleteComment: async (id: string): Promise<void> => {
-    await api.delete(`/${id}`);
+    await api.delete(`/comment/${id}`);
   },
 };

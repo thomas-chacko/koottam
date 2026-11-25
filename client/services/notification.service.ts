@@ -41,14 +41,14 @@ export const notificationService = {
   },
 
   markRead: async (id: string): Promise<void> => {
-    await api.patch(`/${id}/read`);
+    await api.patch(`/notification/${id}/read`);
   },
 
   markAllRead: async (): Promise<void> => {
-    await api.patch("/read-all");
+    await api.patch("/notification/read-all");
   },
 
   deleteNotification: async (id: string): Promise<void> => {
-    await api.delete(`/${id}`);
+    await api.delete(`/notification/${id}`);
   },
 };
